@@ -1,39 +1,103 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}Selamat Datang{% endblock %}
 
 {% block content %}
+<div class="hero-section text-center mb-5">
+    <h1 class="display-4 mb-4">Selamat Datang di Sistem PPDB Online</h1>
+    <p class="lead mb-4">Sistem Penerimaan Peserta Didik Baru yang mudah, cepat, dan transparan</p>
+    {% if not current_user.is_authenticated %}
+        <div class="hero-buttons">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-user-plus me-2"></i>Daftar Sekarang
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Masuk
+            </a>
+        </div>
+    {% else %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-tachometer-alt me-2"></i>Ke Dashboard
+        </a>
+    {% endif %}
+</div>
+
 <div class="row justify-content-center">
-    <div class="col-md-8 text-center">
-        <h1 class="mb-4">Welcome to Student Admission System</h1>
-        <div class="card">
+    <div class="col-md-10">
+        <div class="card shadow-lg">
             <div class="card-body">
-                <h2>Registration Steps</h2>
-                <div class="steps mt-4">
-                    <div class="step">
-                        <h3>1. Create an Account</h3>
-                        <p>Register with your personal information to get started</p>
-                    </div>
-                    <div class="step">
-                        <h3>2. Login to Your Account</h3>
-                        <p>Access your dashboard using your credentials</p>
-                    </div>
-                    <div class="step">
-                        <h3>3. Fill Admission Form</h3>
-                        <p>Complete the student admission form with required details</p>
-                    </div>
-                    <div class="step">
-                        <h3>4. Wait for Approval</h3>
-                        <p>Track your application status on your dashboard</p>
+                <h2 class="card-title text-center mb-4">Langkah-langkah Pendaftaran</h2>
+                <div class="steps-wrapper">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="step-card">
+                                <div class="step-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <h3>1. Buat Akun</h3>
+                                <p>Daftar dengan informasi pribadi Anda untuk memulai</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-card">
+                                <div class="step-icon">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <h3>2. Masuk ke Akun</h3>
+                                <p>Akses dashboard menggunakan akun Anda</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-card">
+                                <div class="step-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <h3>3. Isi Formulir</h3>
+                                <p>Lengkapi formulir pendaftaran dengan data yang diperlukan</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-card">
+                                <div class="step-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h3>4. Tunggu Hasil</h3>
+                                <p>Pantau status pendaftaran Anda di dashboard</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-4">
-                    {% if not current_user.is_authenticated %}
-                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary me-2">Register Now</a>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Login</a>
-                    {% else %}
-                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
-                    {% endif %}
+            </div>
+        </div>
+
+        <div class="info-cards mt-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                            <h4>Jadwal PPDB</h4>
+                            <p>Pendaftaran dibuka dari 1 Juni hingga 30 Juni 2024</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-upload fa-3x mb-3 text-primary"></i>
+                            <h4>Dokumen</h4>
+                            <p>Siapkan dokumen yang diperlukan untuk pendaftaran</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-question-circle fa-3x mb-3 text-primary"></i>
+                            <h4>Bantuan</h4>
+                            <p>Hubungi kami jika membutuhkan bantuan</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

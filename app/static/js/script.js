@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         admissionForm.addEventListener('submit', function(e) {
             const submitButton = this.querySelector('button[type="submit"]');
             submitButton.disabled = true;
-            submitButton.innerHTML = 'Submitting...';
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
         });
     }
     
@@ -18,12 +18,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Handle flash messages auto-hide
-    const flashMessages = document.querySelectorAll('.alert');
-    flashMessages.forEach(message => {
+    // Handle flash messages and temporary notices auto-hide
+    const tempElements = document.querySelectorAll('.temp-notice');
+    tempElements.forEach(element => {
         setTimeout(() => {
-            message.style.opacity = '0';
-            setTimeout(() => message.remove(), 300);
-        }, 5000);
+            element.style.opacity = '0';
+            setTimeout(() => {
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+            }, 300);
+        }, 6000); // Changed to 6 seconds
     });
+    
+    // Theme switcher functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    if (themeToggle) {
+        // Function to set theme
+        function setTheme(isDark) {
+            const theme = isDark ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.checked = isDark;
+            
+            // Dispatch event untuk komponen yang perlu update
+            document.dispatchEvent(new CustomEvent('themeChanged', {
+                detail: { theme: theme }
+            }));
+        }
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme === 'dark');
+
+        // Listen for theme toggle changes
+        themeToggle.addEventListener('change', (e) => {
+            setTheme(e.target.checked);
+        });
+    }
 });

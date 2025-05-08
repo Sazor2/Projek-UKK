@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Dashboard Admin{% endblock %}
 
 {% block content %}
 <div class="card">
     <div class="card-body">
-        <h2>Student Registration Management</h2>
+        <h2>Manajemen Pendaftaran Siswa</h2>
         <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Student Name</th>
-                        <th>Submission Date</th>
+                        <th>Nama Siswa</th>
+                        <th>Tanggal Pendaftaran</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,22 +25,22 @@
                         <td>{{ form.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>
                             <span class="badge bg-{{ 'success' if form.status == 'accepted' else 'danger' if form.status == 'rejected' else 'info' }}">
-                                {{ form.status }}
+                                {{ 'Diterima' if form.status == 'accepted' else 'Ditolak' if form.status == 'rejected' else 'Menunggu' }}
                             </span>
                         </td>
                         <td>
                             {% if form.status == 'pending' %}
                             <form method="POST" action="{{ url_for('main.update_status', form_id=form.id) }}" class="d-inline status-update-form">
                                 <input type="hidden" name="status" value="accepted">
-                                <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                <button type="submit" class="btn btn-success btn-sm">Terima</button>
                             </form>
                             <form method="POST" action="{{ url_for('main.update_status', form_id=form.id) }}" class="d-inline status-update-form">
                                 <input type="hidden" name="status" value="rejected">
-                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Tolak</button>
                             </form>
                             {% endif %}
                             <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ form.id }}">
-                                View Details
+                                Lihat Detail
                             </button>
                         </td>
                     </tr>
@@ -53,25 +53,115 @@
 
 {% for form in forms %}
 <div class="modal fade" id="detailModal{{ form.id }}" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Application Details</h5>
+                <h5 class="modal-title">Detail Pendaftaran Siswa</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="application-details">
-                    <p><strong>Student Name:</strong> {{ form.user.name }}</p>
-                    {% if form.form_data %}
-                        {% set form_data = form.parsed_form_data %}
-                        <p><strong>Birth Date:</strong> {{ form_data.get('birth_date', '-') }}</p>
-                        <p><strong>Address:</strong> {{ form_data.get('address', '-') }}</p>
-                        <p><strong>Phone Number:</strong> {{ form_data.get('phone', '-') }}</p>
-                        <p><strong>Previous School:</strong> {{ form_data.get('previous_school', '-') }}</p>
-                    {% endif %}
-                    <p><strong>Status:</strong> {{ form.status|title }}</p>
-                    <p><strong>Submitted:</strong> {{ form.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Data Pribadi</h6>
+                            <p><strong>Nama Lengkap:</strong> {{ form.user.name }}</p>
+                            {% if form.form_data %}
+                                {% set form_data = form.parsed_form_data %}
+                                <p><strong>Tanggal Lahir:</strong> {{ form_data.get('birth_date', '-') }}</p>
+                                <p><strong>Alamat:</strong> {{ form_data.get('address', '-') }}</p>
+                                <p><strong>No. Telepon:</strong> {{ form_data.get('phone', '-') }}</p>
+                                <p><strong>Asal Sekolah:</strong> {{ form_data.get('previous_school', '-') }}</p>
+                                <p><strong>NISN:</strong> {{ form_data.get('nisn', '-') }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Status Pendaftaran</h6>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-{{ 'success' if form.status == 'accepted' else 'danger' if form.status == 'rejected' else 'info' }}">
+                                    {{ 'Diterima' if form.status == 'accepted' else 'Ditolak' if form.status == 'rejected' else 'Menunggu' }}
+                                </span>
+                            </p>
+                            <p><strong>Tanggal Pendaftaran:</strong> {{ form.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3">Dokumen</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="document-preview">
+                                <p><strong>Foto Siswa (3x4)</strong></p>
+                                {% if form.foto_siswa %}
+                                    <img src="{{ url_for('static', filename='uploads/' + form.foto_siswa) }}" 
+                                         class="img-fluid mb-2" alt="Foto Siswa">
+                                    <a href="{{ url_for('static', filename='uploads/' + form.foto_siswa) }}" 
+                                       class="btn btn-sm btn-primary" target="_blank">Lihat Full</a>
+                                {% else %}
+                                    <p class="text-muted">Foto tidak tersedia</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Dokumen</th>
+                                            <th>Status</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% set documents = [
+                                            ('Akta Kelahiran', form.akta_kelahiran),
+                                            ('Kartu Keluarga', form.kartu_keluarga),
+                                            ('Ijazah/SKL SMP', form.ijazah_smp),
+                                            ('KTP Orang Tua', form.ktp_ortu),
+                                            ('Nilai Rapor', form.nilai_rapor),
+                                            ('Sertifikat Prestasi', form.sertifikat_prestasi)
+                                        ] %}
+                                        
+                                        {% for doc_name, doc_file in documents %}
+                                            <tr>
+                                                <td>{{ doc_name }}</td>
+                                                <td>
+                                                    {% if doc_file %}
+                                                        <span class="badge bg-success">Tersedia</span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">Tidak Tersedia</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if doc_file %}
+                                                        <a href="{{ url_for('static', filename='uploads/' + doc_file) }}" 
+                                                           class="btn btn-sm btn-primary" target="_blank">
+                                                            Lihat Dokumen
+                                                        </a>
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                {% if form.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('main.update_status', form_id=form.id) }}" class="d-inline">
+                        <input type="hidden" name="status" value="accepted">
+                        <button type="submit" class="btn btn-success">Terima Pendaftaran</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('main.update_status', form_id=form.id) }}" class="d-inline">
+                        <input type="hidden" name="status" value="rejected">
+                        <button type="submit" class="btn btn-danger">Tolak Pendaftaran</button>
+                    </form>
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>

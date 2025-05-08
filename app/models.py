@@ -19,6 +19,16 @@ class Form(db.Model):
     form_data = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default='pending')
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Tambahan kolom untuk dokumen
+    akta_kelahiran = db.Column(db.String(255))
+    kartu_keluarga = db.Column(db.String(255))
+    ijazah_smp = db.Column(db.String(255))
+    foto_siswa = db.Column(db.String(255))
+    ktp_ortu = db.Column(db.String(255))
+    nisn_doc = db.Column(db.String(255))
+    nilai_rapor = db.Column(db.String(255))
+    sertifikat_prestasi = db.Column(db.String(255))
 
     @property
     def parsed_form_data(self):

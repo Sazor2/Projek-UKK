@@ -1,67 +1,443 @@
-.steps {
-    text-align: left;
-    padding: 20px;
+/* Mode Tema */
+:root[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --text-primary: #333333;
+    --card-bg: #ffffff;
+    --nav-bg: #333333;
+    --step-bg: #f8f9fa;
+    --border-color: #dee2e6;
+    --input-bg: #ffffff;
+    --modal-bg: #ffffff;
+    --table-hover: rgba(0, 0, 0, 0.075);
+    --btn-text: #ffffff;
+    --link-color: #007bff;
+    --badge-bg: #6c757d;
+    --alert-bg: rgba(255, 255, 255, 0.9);
 }
 
-.step {
-    margin-bottom: 30px;
-    padding: 20px;
-    border-left: 3px solid #007bff;
-    background-color: #f8f9fa;
+:root[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --text-primary: #ffffff;
+    --card-bg: #2d2d2d;
+    --nav-bg: #000000;
+    --step-bg: #2d2d2d;
+    --border-color: #404040;
+    --input-bg: #333333;
+    --modal-bg: #2d2d2d;
+    --table-hover: rgba(255, 255, 255, 0.075);
+    --btn-text: #ffffff;
+    --link-color: #66b0ff;
+    --badge-bg: #495057;
+    --alert-bg: rgba(45, 45, 45, 0.9);
 }
 
-.step h3 {
-    color: #007bff;
-    font-size: 1.2rem;
-    margin-bottom: 10px;
+/* Aplikasikan ke semua komponen */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
 }
 
-.step p {
-    color: #6c757d;
-    margin-bottom: 0;
-}
-
+/* Cards */
 .card {
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    border: none;
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Tables */
+.table {
+    color: var(--text-primary);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--table-hover);
+}
+
+/* Forms */
+.form-control {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
 }
 
 .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--link-color);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--link-color);
+    border-color: var(--link-color);
+    color: var(--btn-text);
+}
+
+.btn-outline-primary {
+    border-color: var(--link-color);
+    color: var(--link-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--link-color);
+    color: var(--btn-text);
+}
+
+/* Links */
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--link-color);
+    opacity: 0.8;
+}
+
+/* Badges */
+.badge {
+    background-color: var(--badge-bg);
+    color: var(--btn-text);
+}
+
+/* Alerts */
+.alert {
+    background-color: var(--alert-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    transition: opacity 0.3s ease;
+}
+
+/* Modals */
+.modal-content {
+    background-color: var(--modal-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color);
+}
+
+.modal-footer {
+    border-top-color: var(--border-color);
+}
+
+/* Steps di landing page */
+.steps .step {
+    background-color: var(--step-bg);
+    border-color: var(--border-color);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--nav-bg) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--btn-text);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--card-bg) 100%);
+    border-radius: 15px;
+    margin-bottom: 4rem;
+}
+
+.hero-section h1 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.hero-buttons {
+    margin-top: 2rem;
+}
+
+/* Step Cards */
+.step-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    height: 100%;
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+}
+
+.step-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--link-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.step-icon i {
+    font-size: 1.75rem;
+}
+
+.step-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Info Cards */
+.info-cards .card {
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.info-cards .card:hover {
+    transform: translateY(-5px);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.social-links a {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--link-color);
+}
+
+/* Main content padding for fixed navbar */
+.main-content {
+    padding-top: 2rem;
+}
+
+/* Theme switch */
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 0 15px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--link-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Transisi */
+* {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+/* Status Container Styles */
+.status-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.status-container .alert {
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.alert-heading {
+    font-weight: 600;
+}
+
+[data-theme="dark"] .alert-info {
+    background-color: rgba(23, 162, 184, 0.2);
+    border-color: rgba(23, 162, 184, 0.3);
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: rgba(40, 167, 69, 0.2);
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Modal Detail Styles */
+.modal-lg {
+    max-width: 900px;
+}
+
+.document-preview {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.document-preview img {
+    max-height: 200px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.application-details h6 {
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table-bordered {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--modal-bg);
+}
+
+[data-theme="dark"] .table-bordered {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .document-preview {
+    background-color: var(--card-bg);
+}
+
+/* Status Badge Styles */
+.status-badge {
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.status-badge.accepted {
+    background-color: var(--success-color, #28a745);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.status-badge.rejected {
+    background-color: var(--danger-color, #dc3545);
+    color: white;
+}
+
+/* Status notification styles */
+.permanent-notice {
+    opacity: 1 !important;
+}
+
+.temp-notice {
+    transition: opacity 0.3s ease;
 }
 
 .alert {
-    border-radius: 0;
-    margin-bottom: 20px;
+    transition: opacity 0.3s ease;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+/* Success notification specific styles */
+.alert-success.permanent-notice {
+    border-left: 5px solid #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+[data-theme="dark"] .alert-success.permanent-notice {
+    background-color: rgba(40, 167, 69, 0.2);
+    border-color: rgba(40, 167, 69, 0.3);
 }
 
-.table {
-    margin-bottom: 0;
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
-.badge {
-    padding: 0.5em 1em;
+/* Dark mode adjustments */
+[data-theme="dark"] .acceptance-info {
+    background-color: rgba(40, 167, 69, 0.2);
 }
 
-.modal-body {
-    padding: 20px;
+[data-theme="dark"] .status-badge.accepted {
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
 }
 
-.modal-body p {
-    margin-bottom: 0.5rem;
+[data-theme="dark"] .hero-section {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--card-bg) 100%);
 }
 
-.btn-sm {
-    margin-right: 0.25rem;
+[data-theme="dark"] .step-icon {
+    box-shadow: 0 0 15px rgba(var(--link-color), 0.3);
 }
