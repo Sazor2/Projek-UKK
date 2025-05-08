@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
-from app.models import User, db
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.models import db, User, Form  # Add Form to imports
+import os
 
 auth = Blueprint('auth', __name__)
 
@@ -55,3 +56,41 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+@auth.route('/delete-account', methods=['POST'])
+@login_required
+def delete_account():
+    if current_user.role == 'admin':
+        flash('Admin accounts cannot be deleted', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    try:
+        # Delete uploaded files if they exist
+        user_form = Form.query.filter_by(user_id=current_user.id).first()
+        if user_form:
+            file_fields = ['akta_kelahiran', 'kartu_keluarga', 'ijazah_smp', 
+                          'foto_siswa', 'ktp_ortu', 'nilai_rapor', 'sertifikat_prestasi']
+            
+            for field in file_fields:
+                filename = getattr(user_form, field)
+                if filename:
+                    file_path = os.path.join('app/static/uploads', filename)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+            
+            # Delete the form
+            db.session.delete(user_form)
+        
+        # Delete the user
+        db.session.delete(current_user)
+        db.session.commit()
+        
+        # Logout the user
+        logout_user()
+        flash('Akun Anda berhasil dihapus', 'success')
+        return redirect(url_for('main.index'))
+    
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Gagal menghapus akun: {str(e)}', 'danger')
+        return redirect(url_for('main.dashboard'))

@@ -441,3 +441,23 @@ input:checked + .slider:before {
 [data-theme="dark"] .step-icon {
     box-shadow: 0 0 15px rgba(var(--link-color), 0.3);
 }
+
+/* Add these styles */
+.modal .alert {
+    border-left: 4px solid #ffc107;
+}
+
+.modal .alert .fas {
+    margin-right: 8px;
+}
+
+/* Delete account button hover effect */
+.btn-danger:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+[data-theme="dark"] .modal .alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+}

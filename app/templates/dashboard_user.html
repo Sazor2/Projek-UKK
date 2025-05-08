@@ -21,6 +21,13 @@
                         TIDAK DITERIMA
                     </div>
                 {% endif %}
+                
+                <hr class="my-4">
+                <div class="text-center">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="fas fa-user-times"></i> Hapus Akun
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -171,6 +178,35 @@
                         </div>
                     {% endif %}
                 {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus Akun</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Peringatan!</strong>
+                    <p class="mb-0">Menghapus akun akan menghapus semua data pendaftaran Anda secara permanen. 
+                    Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+                <p>Apakah Anda yakin ingin menghapus akun Anda?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="{{ url_for('auth.delete_account') }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-user-times"></i> Hapus Akun
+                    </button>
+                </form>
             </div>
         </div>
     </div>
