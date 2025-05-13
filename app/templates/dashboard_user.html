@@ -3,211 +3,244 @@
 {% block title %}Dashboard Siswa{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3>Informasi Siswa</h3>
-                <p><strong>Nama:</strong> {{ current_user.name }}</p>
-                <p><strong>Username:</strong> {{ current_user.username }}</p>
+<div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="welcome-text">Selamat Datang, {{ current_user.name }}</h2>
+                <p class="text-muted">{{ "Silahkan lengkapi pendaftaran Anda" if not form_submitted else "Status pendaftaran Anda dapat dilihat di bawah" }}</p>
+            </div>
+            <div class="col-md-4 text-md-end">
                 {% if form_status == 'accepted' %}
-                    <div class="status-badge accepted permanent-notice">
-                        <i class="fas fa-check-circle"></i>
-                        DITERIMA
+                    <div class="status-pill accepted">
+                        <i class="fas fa-check-circle"></i> Diterima
                     </div>
                 {% elif form_status == 'rejected' %}
-                    <div class="status-badge rejected temp-notice">
-                        <i class="fas fa-times-circle"></i>
-                        TIDAK DITERIMA
+                    <div class="status-pill rejected">
+                        <i class="fas fa-times-circle"></i> Tidak Diterima
+                    </div>
+                {% elif form_submitted %}
+                    <div class="status-pill pending">
+                        <i class="fas fa-clock"></i> Dalam Proses
                     </div>
                 {% endif %}
-                
-                <hr class="my-4">
-                <div class="text-center">
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                        <i class="fas fa-user-times"></i> Hapus Akun
-                    </button>
-                </div>
             </div>
         </div>
-        
-        <div class="card">
-            <div class="card-body">
-                <h3>Status Pendaftaran</h3>
-                <div class="text-center py-3">
-                    <div class="status-container">
-                        {% if form_status == 'pending' %}
-                            <div class="alert alert-info temp-notice">
-                                <h4 class="alert-heading mb-3">
-                                    <i class="fas fa-clock"></i>
-                                    Sedang Diproses
-                                </h4>
-                                <p>Tim kami sedang memeriksa berkas pendaftaran Anda.</p>
-                                <hr>
-                                <p class="mb-0">Silahkan periksa status pendaftaran secara berkala.</p>
-                                <div class="mt-3">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p class="text-muted mt-2">Estimasi: 2-3 hari kerja</p>
+    </div>
+
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-4">
+            <!-- Profile Card -->
+            <div class="card profile-card mb-4">
+                <div class="card-body">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h4>{{ current_user.name }}</h4>
+                            <span class="text-muted">@{{ current_user.username }}</span>
+                        </div>
+                    </div>
+
+                    {% if form_submitted %}
+                        {% set form_data = form_submitted.parsed_form_data %}
+                        <div class="profile-details mt-4">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div>
+                                    <label>Tanggal Lahir</label>
+                                    <span>{{ form_data.get('birth_date') }}</span>
                                 </div>
                             </div>
-                        {% elif form_status == 'accepted' %}
-                            <div class="alert alert-success permanent-notice">
-                                <h4 class="alert-heading mb-3">
-                                    <i class="fas fa-check-circle"></i>
-                                    Selamat! Anda Diterima
-                                </h4>
-                                <p>Pendaftaran Anda telah disetujui.</p>
-                                <hr>
-                                <div class="acceptance-info">
-                                    <h5 class="mb-3">Langkah Selanjutnya:</h5>
-                                    <ol class="text-start">
-                                        <li>Cetak bukti penerimaan</li>
-                                        <li>Lakukan daftar ulang</li>
-                                        <li>Ikuti orientasi siswa baru</li>
-                                    </ol>
-                                    <div class="mt-3">
-                                        <a href="#" class="btn btn-outline-success">
-                                            <i class="fas fa-print"></i>
-                                            Cetak Bukti Penerimaan
-                                        </a>
-                                    </div>
+                            <div class="detail-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <label>Umur</label>
+                                    <span>{{ age }} tahun</span>
                                 </div>
                             </div>
-                        {% elif form_status == 'rejected' %}
-                            <div class="alert alert-danger temp-notice">
-                                <h4 class="alert-heading mb-3">
-                                    <i class="fas fa-times-circle"></i>
-                                    Mohon Maaf
-                                </h4>
-                                <p>Pendaftaran Anda tidak dapat kami terima saat ini.</p>
-                                <hr>
-                                <p class="mb-0">Untuk informasi lebih lanjut, silahkan hubungi pihak sekolah.</p>
+                            <div class="detail-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <label>Telepon</label>
+                                    <span>{{ form_data.get('phone') }}</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-school"></i>
+                                <div>
+                                    <label>Asal Sekolah</label>
+                                    <span>{{ form_data.get('previous_school') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Timeline Card -->
+            {% if form_submitted %}
+            <div class="card timeline-card">
+                <div class="card-body">
+                    <h5 class="card-title">Progress Pendaftaran</h5>
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Pendaftaran</h6>
+                                <p>Form telah disubmit</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item {{ 'active' if form_status == 'pending' else 'completed' if form_status in ['accepted', 'rejected'] else '' }}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Verifikasi</h6>
+                                <p>Pemeriksaan berkas</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item {{ 'completed' if form_status in ['accepted', 'rejected'] else '' }}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Keputusan</h6>
+                                <p>Hasil seleksi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-md-8">
+            {% if form_status == 'accepted' %}
+                <div class="card acceptance-card">
+                    <div class="acceptance-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Selamat! Anda Diterima</h3>
+                        <p>Anda telah resmi diterima sebagai siswa baru. Silahkan ikuti langkah-langkah berikut.</p>
+                    </div>
+                    
+                    <div class="next-steps">
+                        <h5>Langkah Selanjutnya</h5>
+                        <div class="steps-grid">
+                            <div class="step-box">
+                                <div class="step-number">1</div>
+                                <div class="step-desc">Cetak Bukti Penerimaan</div>
+                            </div>
+                            <div class="step-box">
+                                <div class="step-number">2</div>
+                                <div class="step-desc">Daftar Ulang</div>
+                            </div>
+                            <div class="step-box">
+                                <div class="step-number">3</div>
+                                <div class="step-desc">Orientasi Siswa</div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-success">
+                            <i class="fas fa-print me-2"></i>Cetak Bukti Penerimaan
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ "Formulir Pendaftaran" if not form_submitted else "Status Pendaftaran" }}</h4>
+                        
+                        {% if not form_submitted %}
+                            <form method="POST" action="{{ url_for('main.submit_form') }}" enctype="multipart/form-data" id="admission-form">
+                                {{ form.hidden_tag() }}
+                                
+                                <div class="form-sections">
+                                    <!-- Data Pribadi -->
+                                    <div class="form-section">
+                                        <h5><i class="fas fa-user me-2"></i>Data Pribadi</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Tanggal Lahir</label>
+                                                <div class="input-group">
+                                                    {{ form.birth_date(class="form-control datepicker") }}
+                                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">NISN</label>
+                                                {{ form.nisn(class="form-control") }}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Alamat Lengkap</label>
+                                            {{ form.address(class="form-control", rows="2") }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Informasi Kontak -->
+                                    <div class="form-section">
+                                        <h5><i class="fas fa-phone me-2"></i>Informasi Kontak</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Nomor Telepon</label>
+                                                {{ form.phone(class="form-control") }}
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Asal Sekolah</label>
+                                                {{ form.previous_school(class="form-control") }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Upload Dokumen -->
+                                    <div class="form-section">
+                                        <h5><i class="fas fa-file-upload me-2"></i>Dokumen</h5>
+                                        <div class="upload-grid">
+                                            <div class="upload-item">
+                                                <label>Foto 3x4</label>
+                                                {{ form.foto_siswa(class="form-control") }}
+                                            </div>
+                                            <div class="upload-item">
+                                                <label>Akta Kelahiran</label>
+                                                {{ form.akta_kelahiran(class="form-control") }}
+                                            </div>
+                                            <div class="upload-item">
+                                                <label>Kartu Keluarga</label>
+                                                {{ form.kartu_keluarga(class="form-control") }}
+                                            </div>
+                                            <div class="upload-item">
+                                                <label>Ijazah/SKL SMP</label>
+                                                {{ form.ijazah_smp(class="form-control") }}
+                                            </div>
+                                            <div class="upload-item">
+                                                <label>KTP Orang Tua</label>
+                                                {{ form.ktp_ortu(class="form-control") }}
+                                            </div>
+                                            <div class="upload-item">
+                                                <label>Nilai Rapor</label>
+                                                {{ form.nilai_rapor(class="form-control") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Kirim Pendaftaran
+                                    </button>
+                                </div>
+                            </form>
+                        {% elif form_status == 'pending' %}
+                            <div class="pending-status">
+                                <i class="fas fa-hourglass-half"></i>
+                                <h5>Pendaftaran Sedang Diproses</h5>
+                                <p>Mohon tunggu konfirmasi dari admin.</p>
                             </div>
                         {% endif %}
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <h3>Formulir Pendaftaran Siswa</h3>
-                {% if not form_submitted %}
-                    <form method="POST" action="{{ url_for('main.submit_form') }}" enctype="multipart/form-data" id="admission-form">
-                        {{ form.hidden_tag() }}
-                        <div class="mb-3">
-                            <label class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" value="{{ current_user.name }}" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Lahir</label>
-                            {{ form.birth_date(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Alamat</label>
-                            {{ form.address(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Nomor Telepon</label>
-                            {{ form.phone(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Sekolah Asal</label>
-                            {{ form.previous_school(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">NISN</label>
-                            {{ form.nisn(class="form-control") }}
-                            <small class="text-muted">Masukkan Nomor Induk Siswa Nasional Anda</small>
-                        </div>
-                        
-                        <h4 class="mt-4">Dokumen yang Diperlukan</h4>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Akta Kelahiran</label>
-                            {{ form.akta_kelahiran(class="form-control") }}
-                            <small class="text-muted">Format: PDF/JPG/PNG</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Kartu Keluarga</label>
-                            {{ form.kartu_keluarga(class="form-control") }}
-                            <small class="text-muted">Format: PDF/JPG/PNG</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Ijazah/SKL SMP</label>
-                            {{ form.ijazah_smp(class="form-control") }}
-                            <small class="text-muted">Format: PDF/JPG/PNG</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Foto Terbaru (3x4)</label>
-                            {{ form.foto_siswa(class="form-control") }}
-                            <small class="text-muted">Format: JPG/PNG, Ukuran 3x4</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">KTP Orang Tua</label>
-                            {{ form.ktp_ortu(class="form-control") }}
-                            <small class="text-muted">Format: PDF/JPG/PNG</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Nilai Rapor SMP</label>
-                            {{ form.nilai_rapor(class="form-control") }}
-                            <small class="text-muted">Format: PDF (Scan semua semester)</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Sertifikat Prestasi (Opsional)</label>
-                            {{ form.sertifikat_prestasi(class="form-control") }}
-                            <small class="text-muted">Format: PDF/JPG/PNG</small>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Kirim Pendaftaran</button>
-                    </form>
-                {% else %}
-                    {% if form_status == 'pending' %}
-                        <div class="alert alert-info">
-                            Anda telah mengirimkan pendaftaran. Harap tunggu pemeriksaan dari admin.
-                        </div>
-                    {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Account Modal -->
-<div class="modal fade" id="deleteAccountModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Konfirmasi Hapus Akun</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Peringatan!</strong>
-                    <p class="mb-0">Menghapus akun akan menghapus semua data pendaftaran Anda secara permanen. 
-                    Tindakan ini tidak dapat dibatalkan.</p>
-                </div>
-                <p>Apakah Anda yakin ingin menghapus akun Anda?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form action="{{ url_for('auth.delete_account') }}" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-user-times"></i> Hapus Akun
-                    </button>
-                </form>
-            </div>
+            {% endif %}
         </div>
     </div>
 </div>

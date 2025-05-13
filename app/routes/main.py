@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, DateField, TextAreaField
 from wtforms.validators import DataRequired, Optional
+from datetime import datetime
 import json
 import os
 from werkzeug.utils import secure_filename
@@ -18,7 +19,9 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 class AdmissionForm(FlaskForm):
-    birth_date = DateField('Birth Date', validators=[DataRequired()])
+    birth_date = DateField('Tanggal Lahir', 
+                          validators=[DataRequired()],
+                          render_kw={"type": "text", "readonly": "readonly"})  # Changed this line
     address = TextAreaField('Address', validators=[DataRequired()])
     phone = StringField('Phone Number', validators=[DataRequired()])
     previous_school = StringField('Previous School', validators=[DataRequired()])
@@ -67,12 +70,21 @@ def dashboard():
     form = AdmissionForm()
     user_form = Form.query.filter_by(user_id=current_user.id).first()
     form_status = user_form.status if user_form else None
-    form_submitted = bool(user_form)
+    form_submitted = user_form
     
-    return render_template('dashboard_user.html', 
+    # Calculate age if birth_date exists
+    age = None
+    if user_form and user_form.parsed_form_data.get('birth_date'):
+        birth_date = datetime.strptime(user_form.parsed_form_data['birth_date'], '%Y-%m-%d')
+        today = datetime.now()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    
+    return render_template('dashboard_user.html',
                          form=form,
                          form_status=form_status,
-                         form_submitted=form_submitted)
+                         form_submitted=form_submitted,
+                         age=age,
+                         now=datetime.now())
 
 @main.route('/submit-form', methods=['POST'])
 @login_required
