@@ -204,18 +204,20 @@
                                              role="tabpanel">
                                             <div class="document-preview-container">
                                                 {% if doc_file %}
-                                                    {% if doc_file.lower().endswith(('.png', '.jpg', '.jpeg')) %}
+                                                    {% if doc_file.lower().endswith('.pdf') %}
+                                                        <div class="pdf-preview">
+                                                            <iframe src="{{ url_for('static', filename='uploads/' + doc_file) }}"
+                                                                    width="100%" 
+                                                                    height="500px"
+                                                                    class="pdf-iframe">
+                                                            </iframe>
+                                                        </div>
+                                                    {% elif doc_file.lower().endswith(('.png', '.jpg', '.jpeg')) %}
                                                         <img src="{{ url_for('static', filename='uploads/' + doc_file) }}" 
                                                              alt="{{ doc_name }}"
-
                                                              class="document-preview-image">
-                                                    {% else %}
-                                                        <div class="pdf-preview">
-                                                            <i class="fas fa-file-pdf"></i>
-                                                            <p>PDF Document</p>
-                                                        </div>
                                                     {% endif %}
-                                                    <div class="document-actions">
+                                                    <div class="document-actions mt-3">
                                                         <a href="{{ url_for('static', filename='uploads/' + doc_file) }}" 
                                                            class="btn btn-primary btn-sm"
                                                            target="_blank">

@@ -28,7 +28,7 @@ def login():
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             return redirect(url_for('main.dashboard'))
-        flash('Invalid username or password', 'danger')
+        flash('Maaf, username atau password yang kamu masukkan tidak sesuai', 'error')
     return render_template('login.html', form=form)
 
 @auth.route('/register', methods=['GET', 'POST'])

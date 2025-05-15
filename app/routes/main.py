@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, DateField, TextAreaField
-from wtforms.validators import DataRequired, Optional
+from wtforms import StringField, DateField, TextAreaField, SelectField
+from wtforms.validators import DataRequired, Length, Regexp, Optional
 from datetime import datetime
 import json
 import os
@@ -15,16 +15,28 @@ main = Blueprint('main', __name__)
 UPLOAD_FOLDER = 'app/static/uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, types=None):
+    if types is None:
+        types = {'pdf', 'png', 'jpg', 'jpeg'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
 
 class AdmissionForm(FlaskForm):
     birth_date = DateField('Tanggal Lahir', 
                           validators=[DataRequired()],
                           render_kw={"type": "text", "readonly": "readonly"})  # Changed this line
     address = TextAreaField('Address', validators=[DataRequired()])
-    phone = StringField('Phone Number', validators=[DataRequired()])
-    previous_school = StringField('Previous School', validators=[DataRequired()])
+    phone = StringField('Nomor Telepon', 
+        validators=[
+            DataRequired(message='Nomor telepon wajib diisi'),
+            Regexp('^[0-9]{10,13}$', message='Nomor telepon harus 10-13 digit angka')
+        ]
+    )
+    previous_school = StringField('Asal Sekolah', 
+        validators=[
+            DataRequired(message='Asal sekolah wajib diisi'),
+            Length(min=3, max=100, message='Nama sekolah harus antara 3-100 karakter')
+        ]
+    )
     
     nisn = StringField('NISN', validators=[DataRequired()])
     akta_kelahiran = FileField('Akta Kelahiran', validators=[
@@ -55,6 +67,21 @@ class AdmissionForm(FlaskForm):
         Optional(),
         FileAllowed(['pdf', 'png', 'jpg', 'jpeg'], 'File harus berformat PDF, PNG, atau JPG!')
     ])
+    gender = SelectField('Jenis Kelamin', 
+                      choices=[
+                          ('', 'Pilih Jenis Kelamin'),
+                          ('L', 'Laki-laki'),
+                          ('P', 'Perempuan')
+                      ],
+                      validators=[DataRequired()])
+                      
+    jurusan = SelectField('Pilihan Jurusan',
+                       choices=[
+                           ('', 'Pilih Jurusan'),
+                           ('ipa', 'IPA (Ilmu Pengetahuan Alam)'),
+                           ('ips', 'IPS (Ilmu Pengetahuan Sosial)')
+                       ],
+                       validators=[DataRequired()])
 
 @main.route('/')
 def index():
@@ -89,32 +116,64 @@ def dashboard():
 @main.route('/submit-form', methods=['POST'])
 @login_required
 def submit_form():
-    if current_user.role == 'admin':
-        return redirect(url_for('main.dashboard'))
-    
     form = AdmissionForm()
     if form.validate_on_submit():
         try:
+            # Check if user already submitted
+            existing_form = Form.query.filter_by(user_id=current_user.id).first()
+            if existing_form:
+                flash('Anda sudah mengirimkan pendaftaran sebelumnya', 'error')
+                return redirect(url_for('main.dashboard'))
+
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
             
             uploaded_files = {}
-            for field_name in ['akta_kelahiran', 'kartu_keluarga', 'ijazah_smp', 
-                             'foto_siswa', 'ktp_ortu', 'nilai_rapor', 'sertifikat_prestasi']:
+            required_files = {
+                'foto_siswa': ['png', 'jpg', 'jpeg'],
+                'akta_kelahiran': ['pdf', 'png', 'jpg', 'jpeg'],
+                'kartu_keluarga': ['pdf', 'png', 'jpg', 'jpeg'],
+                'ijazah_smp': ['pdf', 'png', 'jpg', 'jpeg'],
+                'ktp_ortu': ['pdf', 'png', 'jpg', 'jpeg'],
+                'nilai_rapor': ['pdf', 'png', 'jpg', 'jpeg']
+            }
+            
+            # Process all required files
+            for field_name, allowed_types in required_files.items():
                 file = getattr(form, field_name).data
-                if file and allowed_file(file.filename):
+                if not file:
+                    flash(f'{field_name.replace("_", " ").title()} wajib diunggah', 'error')
+                    return redirect(url_for('main.dashboard'))
+                
+                if file and allowed_file(file.filename, set(allowed_types)):
                     filename = secure_filename(f"{current_user.id}_{field_name}_{file.filename}")
                     filepath = os.path.join(UPLOAD_FOLDER, filename)
                     file.save(filepath)
                     uploaded_files[field_name] = filename
+                else:
+                    flash(f'Format file {field_name.replace("_", " ").title()} tidak sesuai', 'error')
+                    return redirect(url_for('main.dashboard'))
             
+            # Handle optional sertifikat_prestasi
+            if form.sertifikat_prestasi.data:
+                file = form.sertifikat_prestasi.data
+                if allowed_file(file.filename, {'pdf', 'png', 'jpg', 'jpeg'}):
+                    filename = secure_filename(f"{current_user.id}_sertifikat_prestasi_{file.filename}")
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    file.save(filepath)
+                    uploaded_files['sertifikat_prestasi'] = filename
+            
+            # Prepare form data
             form_data = {
                 'birth_date': form.birth_date.data.strftime('%Y-%m-%d'),
-                'address': form.address.data,
-                'phone': form.phone.data,
-                'previous_school': form.previous_school.data,
-                'nisn': form.nisn.data
+                'address': form.address.data.strip(),
+                'phone': form.phone.data.strip(),
+                'previous_school': form.previous_school.data.strip(),
+                'nisn': form.nisn.data.strip(),
+                'gender': form.gender.data,
+                'jurusan': form.jurusan.data
             }
             
+            # Create new form entry
             new_form = Form(
                 user_id=current_user.id,
                 form_data=json.dumps(form_data),
@@ -125,18 +184,18 @@ def submit_form():
             db.session.add(new_form)
             db.session.commit()
             
-            flash('Your application has been submitted successfully!', 'success')
+            flash('Pendaftaran Anda berhasil dikirim!', 'success')
             return redirect(url_for('main.dashboard'))
             
         except Exception as e:
             db.session.rollback()
-            flash(f'Error submitting application: {str(e)}', 'danger')
+            flash(f'Error saat mengirim pendaftaran: {str(e)}', 'error')
             return redirect(url_for('main.dashboard'))
     
-    # If form validation fails, show errors
+    # If validation fails, show all errors
     for field, errors in form.errors.items():
         for error in errors:
-            flash(f'Error in {field}: {error}', 'danger')
+            flash(f'{getattr(form, field).label.text}: {error}', 'error')
     
     return redirect(url_for('main.dashboard'))
 

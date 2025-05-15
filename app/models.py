@@ -29,6 +29,8 @@ class Form(db.Model):
     nisn_doc = db.Column(db.String(255))
     nilai_rapor = db.Column(db.String(255))
     sertifikat_prestasi = db.Column(db.String(255))
+    gender = db.Column(db.String(10))
+    jurusan = db.Column(db.String(20))
 
     @property
     def parsed_form_data(self):

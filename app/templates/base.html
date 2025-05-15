@@ -10,58 +10,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-                <i class="fas fa-school me-2"></i>
-                <span>Sistem PPDB</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto d-flex align-items-center">
-                    <div class="theme-switch-wrapper">
-                        <label class="theme-switch" for="theme-toggle">
-                            <input type="checkbox" id="theme-toggle">
-                            <span class="theme-icon">
-                                <i class="fas fa-sun light-icon"></i>
-                                <i class="fas fa-moon dark-icon"></i>
-                            </span>
-                        </label>
+    <!-- Add this right after body tag -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="toast align-items-center border-0 fade show" 
+                         role="alert" 
+                         aria-live="assertive" 
+                         aria-atomic="true"
+                         data-bs-delay="5000">
+                        <div class="d-flex">
+                            <div class="toast-body {% if category == 'error' %}bg-danger text-white{% endif %}">
+                                <i class="fas {% if category == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                                {{ message }}
+                            </div>
+                            <button type="button" class="btn-close {% if category == 'error' %}btn-close-white{% endif %} me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
                     </div>
-                    {% if current_user.is_authenticated %}
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
-                        </a>
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                            <i class="fas fa-sign-out-alt me-1"></i> Keluar
-                        </a>
-                    {% else %}
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Masuk
-                        </a>
-                        <a class="nav-link" href="{{ url_for('auth.register') }}">
-                            <i class="fas fa-user-plus me-1"></i> Daftar
-                        </a>
-                    {% endif %}
-                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Replace the existing navbar content -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+            <i class="fas fa-school me-2"></i>
+            <span>Sistem PPDB</span>
+        </a>
+        
+        <!-- Hamburger Menu Button -->
+        <div class="d-flex align-items-center">
+            <div class="theme-switch-wrapper me-3">
+                <label class="theme-switch" for="theme-toggle">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="theme-icon">
+                        <i class="fas fa-sun light-icon"></i>
+                        <i class="fas fa-moon dark-icon"></i>
+                    </span>
+                </label>
             </div>
+            {% if current_user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-link nav-link dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% if form_submitted %}
+                        <li>
+                            <button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                <i class="fas fa-trash-alt me-2"></i>Hapus Akun
+                            </button>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Keluar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <a class="nav-link" href="{{ url_for('auth.login') }}">
+                    <i class="fas fa-sign-in-alt me-1"></i> Masuk
+                </a>
+                <a class="nav-link ms-3" href="{{ url_for('auth.register') }}">
+                    <i class="fas fa-user-plus me-1"></i> Daftar
+                </a>
+            {% endif %}
         </div>
-    </nav>
+    </div>
+</nav>
 
     <main class="main-content">
         <div class="container mt-5 pt-4">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
             
             {% block content %}{% endblock %}
         </div>
@@ -105,5 +135,25 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.id.min.js"></script>
+    <!-- Add this before closing body tag -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            toastElList.forEach(function(toastEl) {
+                var toast = new bootstrap.Toast(toastEl, {
+                    animation: true,
+                    autohide: true,
+                    delay: 5000
+                });
+                toast.show();
+                
+                // Add fade-out animation
+                toastEl.addEventListener('hide.bs.toast', function() {
+                    this.style.transition = 'opacity 0.5s ease-out';
+                    this.style.opacity = '0';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

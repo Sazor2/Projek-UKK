@@ -1533,133 +1533,112 @@ input[type="date"]::-webkit-outer-spin-button {
 
 /* Profile Card */
 .profile-card {
-    border-radius: 15px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
     overflow: hidden;
 }
 
 .profile-header {
+    padding: 1.5rem;
     text-align: center;
-    padding: 2rem 1rem;
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .profile-avatar {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1rem;
-    font-size: 3rem;
-    color: var(--link-color);
-}
-
-.profile-name {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.profile-id {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.profile-info {
-    padding: 1.5rem 1rem;
-}
-
-/* Timeline */
-.timeline {
+    width: 160px;
+    height: 213px;
+    margin-bottom: 1rem;
     position: relative;
-    padding: 2rem 0;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
 }
 
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 1rem;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--border-color);
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.timeline-item {
-    position: relative;
-    padding-left: 3rem;
-    margin-bottom: 2rem;
-}
-
-.timeline-dot {
-    position: absolute;
-    left: -0.5rem;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
+.profile-avatar i {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 3rem;
     color: var(--text-muted);
 }
 
-.timeline-item.completed .timeline-dot {
-    background: #28a745;
-    border-color: #28a745;
-    color: white;
-}
-
-.timeline-item.active .timeline-dot {
-    background: #ffc107;
-    border-color: #ffc107;
-    color: white;
-}
-
-.timeline-content {
-    background: var(--bg-primary);
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.timeline-content h5 {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-/* Result Box */
-.result-box {
+.profile-info-header {
+    width: 100%;
     text-align: center;
-    padding: 1.5rem;
-    border-radius: 8px;
     margin-top: 1rem;
 }
 
-.result-box i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+.profile-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem;
 }
 
-.result-box.success {
-    background: rgba(40, 167, 69, 0.1);
-    color: #28a745;
+.profile-id {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    display: block;
 }
 
-.result-box.danger {
-    background: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
+/* Profile Info Section */
+.profile-info {
+    padding: 1.25rem;
+    background: var(--card-bg);
 }
 
-/* Dark Mode Adjustments */
-[data-theme="dark"] .timeline-content {
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+}
+
+.info-item i {
+    width: 24px;
+    color: var(--link-color);
+    margin-right: 0.75rem;
+    text-align: center;
+}
+
+.info-item label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.125rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-item span {
+    color: var(--text-primary);
+    font-size: 0.925rem;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .profile-avatar {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .info-item {
     background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .timeline::before {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .result-box.success {
-    background: rgba(40, 167, 69, 0.2);
-}
-
-[data-theme="dark"] .result-box.danger {
-    background: rgba(220, 53, 69, 0.2);
 }

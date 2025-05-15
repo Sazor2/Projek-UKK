@@ -3,9 +3,77 @@ document.addEventListener('DOMContentLoaded', function() {
     const admissionForm = document.querySelector('#admission-form');
     if (admissionForm) {
         admissionForm.addEventListener('submit', function(e) {
-            const submitButton = this.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+            const phone = document.getElementById('phone');
+            const school = document.getElementById('previous_school');
+            let isValid = true;
+
+            // Validate phone
+            if (!phone.value.trim()) {
+                e.preventDefault();
+                phone.classList.add('is-invalid');
+                phone.nextElementSibling.textContent = 'Nomor telepon wajib diisi';
+                isValid = false;
+            } else if (!/^[0-9]{10,13}$/.test(phone.value.trim())) {
+                e.preventDefault();
+                phone.classList.add('is-invalid');
+                phone.nextElementSibling.textContent = 'Nomor telepon harus 10-13 digit angka';
+                isValid = false;
+            } else {
+                phone.classList.remove('is-invalid');
+                phone.classList.add('is-valid');
+            }
+
+            // Validate school
+            if (!school.value.trim()) {
+                e.preventDefault();
+                school.classList.add('is-invalid');
+                school.nextElementSibling.textContent = 'Asal sekolah wajib diisi';
+                isValid = false;
+            } else if (school.value.trim().length < 3) {
+                e.preventDefault();
+                school.classList.add('is-invalid');
+                school.nextElementSibling.textContent = 'Nama sekolah minimal 3 karakter';
+                isValid = false;
+            } else {
+                school.classList.remove('is-invalid');
+                school.classList.add('is-valid');
+            }
+
+            // If form is valid, show loading state
+            if (isValid) {
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengirim...';
+            }
+        });
+
+        // Real-time validation as user types
+        const validateInput = (input, validationFn) => {
+            input.addEventListener('input', function() {
+                const result = validationFn(this.value.trim());
+                if (result.isValid) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                    this.nextElementSibling.textContent = result.message;
+                }
+            });
+        };
+
+        // Phone validation
+        validateInput(document.getElementById('phone'), (value) => {
+            if (!value) return { isValid: false, message: 'Nomor telepon wajib diisi' };
+            if (!/^[0-9]{10,13}$/.test(value)) return { isValid: false, message: 'Nomor telepon harus 10-13 digit angka' };
+            return { isValid: true };
+        });
+
+        // School validation
+        validateInput(document.getElementById('previous_school'), (value) => {
+            if (!value) return { isValid: false, message: 'Asal sekolah wajib diisi' };
+            if (value.length < 3) return { isValid: false, message: 'Nama sekolah minimal 3 karakter' };
+            return { isValid: true };
         });
     }
     
@@ -58,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize datepicker
+    // Initialize datepicker with theme support
     if ($.fn.datepicker) {
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -77,9 +145,12 @@ document.addEventListener('DOMContentLoaded', function() {
             maxViewMode: 2,
             startDate: "-25y",
             endDate: "-10y"
-        }).on('keydown', function(e) {
-            e.preventDefault();
-            return false;
+        });
+
+        // Update datepicker theme when theme changes
+        document.addEventListener('themeChanged', function(e) {
+            $('.datepicker-dropdown').remove(); // Remove any open datepickers
+            $('.datepicker').datepicker('update'); // Refresh datepickers
         });
 
         // Make the calendar icon clickable
@@ -111,4 +182,90 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    
+    // Validasi ukuran dan tipe file
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            
+            if (file) {
+                if (file.size > maxSize) {
+                    alert('Ukuran file terlalu besar. Maksimum 2MB');
+                    this.value = '';
+                    return;
+                }
+                
+                // Check file type based on input name
+                if (this.name === 'foto_siswa') {
+                    // Only images for foto_siswa
+                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                        alert('Foto siswa harus berformat JPG atau PNG');
+                        this.value = '';
+                        return;
+                    }
+                } else {
+                    // Allow PDF and images for other documents
+                    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('File harus berformat PDF, JPG, atau PNG');
+                        this.value = '';
+                        return;
+                    }
+                }
+            }
+        });
+    });
+});
+
+// Form Steps Navigation
+function nextStep() {
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+    document.getElementById('section1').classList.add('d-none');
+    document.getElementById('section2').classList.remove('d-none');
+    
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep() {
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('section2').classList.add('d-none');
+    document.getElementById('section1').classList.remove('d-none');
+    
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Form Validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('admission-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Mohon lengkapi semua field yang wajib diisi');
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
+        });
+    }
 });
