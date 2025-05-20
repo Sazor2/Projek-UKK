@@ -31,6 +31,8 @@ class Form(db.Model):
     sertifikat_prestasi = db.Column(db.String(255))
     gender = db.Column(db.String(10))
     jurusan = db.Column(db.String(20))
+    payment_proof = db.Column(db.String(255))  # Untuk menyimpan bukti pembayaran
+    payment_status = db.Column(db.String(20), default='unpaid')  # unpaid/paid/confirmed
 
     @property
     def parsed_form_data(self):
@@ -41,3 +43,11 @@ class Form(db.Model):
             return self.form_data
         except:
             return {}
+
+    @property
+    def user_details(self):
+        """Return user credentials"""
+        return {
+            'username': self.user.username,
+            'name': self.user.name
+        }

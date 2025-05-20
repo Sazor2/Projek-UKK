@@ -64,7 +64,6 @@
                             </thead>
                             <tbody>
                                 {% for form in forms %}
-                                {% set form_data = form.parsed_form_data %}
                                 <tr class="application-row" data-status="{{ form.status }}">
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -78,12 +77,12 @@
                                             </div>
                                             <div class="ms-3">
                                                 <h6 class="mb-0">{{ form.user.name }}</h6>
-                                                <small class="text-muted">{{ form_data.get('phone', '-') }}</small>
+                                                <small class="text-muted">{{ form.parsed_form_data.get('phone', '-') }}</small>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ form_data.get('nisn', '-') }}</td>
-                                    <td>{{ form_data.get('previous_school', '-') }}</td>
+                                    <td>{{ form.parsed_form_data.get('nisn', '-') }}</td>
+                                    <td>{{ form.parsed_form_data.get('previous_school', '-') }}</td>
                                     <td>{{ form.timestamp.strftime('%d %b %Y') }}</td>
                                     <td>
                                         <span class="status-badge {{ form.status }}">
@@ -109,8 +108,9 @@
 
 <!-- Detail Modals -->
 {% for form in forms %}
+{% set form_data = form.parsed_form_data %}
 <div class="modal fade" id="detailModal{{ form.id }}" tabindex="-1">
-    <div class="modal-dialog modal-xl"> <!-- Changed to extra large -->
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Detail Pendaftaran - {{ form.user.name }}</h5>
@@ -118,130 +118,288 @@
             </div>
             <div class="modal-body">
                 <div class="student-profile">
-                    <!-- Profile Header -->
-                    <div class="profile-header mb-4">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <div class="student-photo">
-                                    {% if form.foto_siswa %}
-                                        <img src="{{ url_for('static', filename='uploads/' + form.foto_siswa) }}" 
-                                             alt="Foto {{ form.user.name }}">
-                                    {% else %}
-                                        <i class="fas fa-user"></i>
-                                    {% endif %}
+                    <!-- Informasi Pribadi -->
+                    <div class="detail-section">
+                        <h6><i class="fas fa-user"></i>Data Pribadi</h6>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <i class="fas fa-id-card"></i>
+                                <div>
+                                    <label>NISN</label>
+                                    <span>{{ form_data.get('nisn', '-') }}</span>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="student-info">
-                                    <h4>{{ form.user.name }}</h4>
-                                    {% set form_data = form.parsed_form_data %}
-                                    <p class="text-muted mb-2">NISN: {{ form_data.get('nisn', '-') }}</p>
-                                    <span class="status-badge {{ form.status }}">
-                                        {{ 'Diterima' if form.status == 'accepted' else 'Ditolak' if form.status == 'rejected' else 'Menunggu' }}
-                                    </span>
+                            <div class="info-item">
+                                <i class="fas fa-venus-mars"></i>
+                                <div>
+                                    <label>Jenis Kelamin</label>
+                                    <span>{{ "Laki-laki" if form_data.get('gender') == 'L' else "Perempuan" }}</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-calendar"></i>
+                                <div>
+                                    <label>Tanggal Lahir</label>
+                                    <span>{{ form_data.get('birth_date', '-') }}</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <label>Nomor Telepon</label>
+                                    <span>{{ form_data.get('phone', '-') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <!-- Left Column - Personal Info -->
-                        <div class="col-md-4">
-                            <div class="detail-section">
-                                <h6><i class="fas fa-user me-2"></i>Data Pribadi</h6>
-                                <div class="info-list">
-                                    <div class="info-item">
-                                        <label>Tanggal Lahir</label>
-                                        <p>{{ form_data.get('birth_date', '-') }}</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <label>No. Telepon</label>
-                                        <p>{{ form_data.get('phone', '-') }}</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <label>Asal Sekolah</label>
-                                        <p>{{ form_data.get('previous_school', '-') }}</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <label>Alamat</label>
-                                        <p>{{ form_data.get('address', '-') }}</p>
-                                    </div>
+                    <!-- Informasi Akademik -->
+                    <div class="detail-section">
+                        <h6><i class="fas fa-graduation-cap"></i>Informasi Akademik</h6>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <i class="fas fa-school"></i>
+                                <div>
+                                    <label>Asal Sekolah</label>
+                                    <span>{{ form_data.get('previous_school', '-') }}</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-book"></i>
+                                <div>
+                                    <label>Jurusan</label>
+                                    <span>{{ "IPA" if form_data.get('jurusan') == 'ipa' else "IPS" }}</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <label>Alamat</label>
+                                    <span>{{ form_data.get('address', '-') }}</span>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Right Column - Document Preview -->
-                        <div class="col-md-8">
-                            <div class="detail-section">
-                                <h6><i class="fas fa-file-alt me-2"></i>Dokumen</h6>
-                                
-                                <!-- Document Navigation Tabs -->
-                                <ul class="nav nav-tabs mb-3" role="tablist">
-                                    {% set documents = [
-                                        ('foto', 'Foto 3x4', form.foto_siswa),
-                                        ('akta', 'Akta Kelahiran', form.akta_kelahiran),
-                                        ('kk', 'Kartu Keluarga', form.kartu_keluarga),
-                                        ('ijazah', 'Ijazah SMP', form.ijazah_smp),
-                                        ('ktp', 'KTP Orang Tua', form.ktp_ortu),
-                                        ('rapor', 'Nilai Rapor', form.nilai_rapor)
-                                    ] %}
-
-                                    {% for doc_id, doc_name, doc_file in documents %}
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ 'active' if loop.first }}" 
-                                               data-bs-toggle="tab" 
-                                               href="#{{ doc_id }}{{ form.id }}" 
-                                               role="tab">{{ doc_name }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-
-                                <!-- Document Preview Tabs -->
-                                <div class="tab-content">
-                                    {% for doc_id, doc_name, doc_file in documents %}
-                                        <div class="tab-pane fade {{ 'show active' if loop.first }}" 
-                                             id="{{ doc_id }}{{ form.id }}" 
-                                             role="tabpanel">
-                                            <div class="document-preview-container">
-                                                {% if doc_file %}
-                                                    {% if doc_file.lower().endswith('.pdf') %}
-                                                        <div class="pdf-preview">
-                                                            <iframe src="{{ url_for('static', filename='uploads/' + doc_file) }}"
-                                                                    width="100%" 
-                                                                    height="500px"
-                                                                    class="pdf-iframe">
-                                                            </iframe>
-                                                        </div>
-                                                    {% elif doc_file.lower().endswith(('.png', '.jpg', '.jpeg')) %}
-                                                        <img src="{{ url_for('static', filename='uploads/' + doc_file) }}" 
-                                                             alt="{{ doc_name }}"
-                                                             class="document-preview-image">
-                                                    {% endif %}
-                                                    <div class="document-actions mt-3">
-                                                        <a href="{{ url_for('static', filename='uploads/' + doc_file) }}" 
-                                                           class="btn btn-primary btn-sm"
-                                                           target="_blank">
-                                                            <i class="fas fa-external-link-alt me-1"></i>
-                                                            Buka di Tab Baru
-                                                        </a>
-                                                        <a href="{{ url_for('static', filename='uploads/' + doc_file) }}" 
-                                                           class="btn btn-success btn-sm"
-                                                           download>
-                                                            <i class="fas fa-download me-1"></i>
-                                                            Unduh
-                                                        </a>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="document-not-found">
-                                                        <i class="fas fa-file-excel"></i>
-                                                        <p>Dokumen tidak tersedia</p>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
+                    <!-- Document Section -->
+                    <div class="detail-section">
+                        <h6><i class="fas fa-file-alt"></i>Dokumen</h6>
+                        <div class="document-grid">
+                            <!-- Pas Foto -->
+                            <div class="document-box">
+                                <h6 class="document-title">Pas Foto</h6>
+                                <div class="document-preview">
+                                    {% if form.foto_siswa %}
+                                        <img src="{{ url_for('static', filename='uploads/' + form.foto_siswa) }}"
+                                             alt="Pas Foto"
+                                             class="preview-image">
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-image"></i>
+                                            <p>Foto tidak tersedia</p>
                                         </div>
-                                    {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
+
+                            <!-- Akta Kelahiran -->
+                            <div class="document-box">
+                                <h6 class="document-title">Akta Kelahiran</h6>
+                                <div class="document-preview">
+                                    {% if form.akta_kelahiran %}
+                                        {% if form.akta_kelahiran.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.akta_kelahiran) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.akta_kelahiran) }}"
+                                                 alt="Akta Kelahiran"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Kartu Keluarga -->
+                            <div class="document-box">
+                                <h6 class="document-title">Kartu Keluarga</h6>
+                                <div class="document-preview">
+                                    {% if form.kartu_keluarga %}
+                                        {% if form.kartu_keluarga.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.kartu_keluarga) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.kartu_keluarga) }}"
+                                                 alt="Kartu Keluarga"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Repeat similar blocks for other documents -->
+                            <!-- Ijazah SMP -->
+                            <div class="document-box">
+                                <h6 class="document-title">Ijazah/SKL SMP</h6>
+                                <div class="document-preview">
+                                    {% if form.ijazah_smp %}
+                                        {% if form.ijazah_smp.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.ijazah_smp) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.ijazah_smp) }}"
+                                                 alt="Ijazah/SKL SMP"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Ijazah SMA -->
+                            <div class="document-box">
+                                <h6 class="document-title">Ijazah/SKL SMA</h6>
+                                <div class="document-preview">
+                                    {% if form.ijazah_sma %}
+                                        {% if form.ijazah_sma.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.ijazah_sma) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.ijazah_sma) }}"
+                                                 alt="Ijazah/SKL SMA"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- SKCK -->
+                            <div class="document-box">
+                                <h6 class="document-title">SKCK</h6>
+                                <div class="document-preview">
+                                    {% if form.skck %}
+                                        {% if form.skck.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.skck) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.skck) }}"
+                                                 alt="SKCK"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Surat Keterangan Lulus -->
+                            <div class="document-box">
+                                <h6 class="document-title">Surat Keterangan Lulus</h6>
+                                <div class="document-preview">
+                                    {% if form.surat_keterangan_lulus %}
+                                        {% if form.surat_keterangan_lulus.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.surat_keterangan_lulus) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.surat_keterangan_lulus) }}"
+                                                 alt="Surat Keterangan Lulus"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Sertifikat -->
+                            <div class="document-box">
+                                <h6 class="document-title">Sertifikat</h6>
+                                <div class="document-preview">
+                                    {% if form.sertifikat %}
+                                        {% if form.sertifikat.lower().endswith('.pdf') %}
+                                            <div class="pdf-preview">
+                                                <iframe src="{{ url_for('static', filename='uploads/' + form.sertifikat) }}"
+                                                        width="100%" height="300px"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='uploads/' + form.sertifikat) }}"
+                                                 alt="Sertifikat"
+                                                 class="preview-image">
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="no-document">
+                                            <i class="fas fa-file-alt"></i>
+                                            <p>Dokumen tidak tersedia</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Pembayaran -->
+                    <div class="detail-section">
+                        <h6><i class="fas fa-money-bill"></i>Status Pembayaran</h6>
+                        <div class="payment-status-box">
+                            {% if form.payment_proof %}
+                                <div class="mb-3">
+                                    <h6>Bukti Pembayaran:</h6>
+                                    <img src="{{ url_for('static', filename='uploads/' + form.payment_proof) }}" 
+                                         class="payment-proof-img" 
+                                         alt="Bukti Pembayaran">
+                                </div>
+                                {% if form.payment_status == 'paid' and form.status != 'accepted' %}
+                                    <form method="POST" action="{{ url_for('main.confirm_payment', form_id=form.id) }}">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-check me-2"></i>Konfirmasi Pembayaran
+                                        </button>
+                                    </form>
+                                {% elif form.payment_status == 'confirmed' %}
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-check-circle me-2"></i>Pembayaran telah dikonfirmasi
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Belum ada bukti pembayaran
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

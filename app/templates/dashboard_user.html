@@ -229,6 +229,67 @@
                     <div class="card-body">
                         <h4 class="card-title mb-4">Progress Pendaftaran</h4>
                         
+                        <!-- Progress Bar -->
+                        <div class="progress-wrapper mb-4">
+                            {% if not form_submitted.payment_proof %}
+                                <div class="progress-percentage mb-2 d-flex justify-content-between">
+                                    <span>Progress: 30%</span>
+                                    <span class="text-warning">Menunggu Pembayaran</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" 
+                                         role="progressbar" 
+                                         style="width: 30%" 
+                                         aria-valuenow="30" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            {% elif form_submitted.payment_status == 'paid' %}
+                                <div class="progress-percentage mb-2 d-flex justify-content-between">
+                                    <span>Progress: 60%</span>
+                                    <span class="text-info">Menunggu Verifikasi Pembayaran</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" 
+                                         role="progressbar" 
+                                         style="width: 60%" 
+                                         aria-valuenow="60" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            {% elif form_status == 'accepted' %}
+                                <div class="progress-percentage mb-2 d-flex justify-content-between">
+                                    <span>Progress: 100%</span>
+                                    <span class="text-success">Pendaftaran Selesai</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" 
+                                         role="progressbar" 
+                                         style="width: 100%" 
+                                         aria-valuenow="100" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            {% elif form_status == 'rejected' %}
+                                <div class="progress-percentage mb-2 d-flex justify-content-between">
+                                    <span>Progress: 100%</span>
+                                    <span class="text-danger">Pendaftaran Ditolak</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" 
+                                         role="progressbar" 
+                                         style="width: 100%" 
+                                         aria-valuenow="100" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
                         <div class="timeline">
                             <div class="timeline-item completed">
                                 <div class="timeline-dot">
@@ -317,6 +378,23 @@
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Tambahkan setelah form submission success -->
+{% if form_submitted and not form_submitted.payment_proof %}
+<div class="payment-notice card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1"><i class="fas fa-info-circle text-primary me-2"></i>Pembayaran Diperlukan</h5>
+                <p class="mb-0 text-muted">Silakan lakukan pembayaran untuk melanjutkan proses pendaftaran</p>
+            </div>
+            <a href="{{ url_for('main.payment', form_id=form_submitted.id) }}" class="btn btn-primary">
+                <i class="fas fa-money-bill me-2"></i>Bayar Sekarang
+            </a>
         </div>
     </div>
 </div>

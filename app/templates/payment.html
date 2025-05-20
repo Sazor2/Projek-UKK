@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Pembayaran{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Informasi Pembayaran</h4>
+                    
+                    <div class="payment-info mb-4">
+                        <div class="alert alert-info">
+                            <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Instruksi Pembayaran</h5>
+                            <p>Silakan transfer ke rekening berikut:</p>
+                            <div class="payment-details">
+                                <p><strong>DANA</strong></p>
+                                <p class="payment-number">
+                                    <span id="accountNumber">83852846863</span>
+                                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('accountNumber')">
+                                        <i class="fas fa-copy"></i> Salin
+                                    </button>
+                                </p>
+                                <p>a.n. [Nama Penerima]</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{ url_for('main.upload_payment', form_id=form.id) }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Upload Bukti Pembayaran</label>
+                            <input type="file" name="payment_proof" class="form-control" accept="image/*" required>
+                            <small class="text-muted">Format: JPG, PNG (Max 2MB)</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Upload Bukti Pembayaran
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Nomor rekening berhasil disalin!');
+    });
+}
+</script>
+{% endblock %}

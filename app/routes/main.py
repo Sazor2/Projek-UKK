@@ -97,20 +97,25 @@ def dashboard():
     form = AdmissionForm()
     user_form = Form.query.filter_by(user_id=current_user.id).first()
     form_status = user_form.status if user_form else None
-    form_submitted = user_form
     
-    # Calculate age if birth_date exists
-    age = None
-    if user_form and user_form.parsed_form_data.get('birth_date'):
-        birth_date = datetime.strptime(user_form.parsed_form_data['birth_date'], '%Y-%m-%d')
-        today = datetime.now()
-        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    # Pre-fill form jika ada data tersimpan
+    if user_form and user_form.parsed_form_data:
+        form_data = user_form.parsed_form_data
+        form.nisn.data = form_data.get('nisn')
+        try:
+            form.birth_date.data = datetime.strptime(form_data.get('birth_date'), '%Y-%m-%d')
+        except (ValueError, TypeError):
+            form.birth_date.data = None
+        form.address.data = form_data.get('address')
+        form.phone.data = form_data.get('phone')
+        form.previous_school.data = form_data.get('previous_school')
+        form.gender.data = form_data.get('gender')
+        form.jurusan.data = form_data.get('jurusan')
     
     return render_template('dashboard_user.html',
                          form=form,
                          form_status=form_status,
-                         form_submitted=form_submitted,
-                         age=age,
+                         form_submitted=user_form,
                          now=datetime.now())
 
 @main.route('/submit-form', methods=['POST'])
@@ -119,50 +124,16 @@ def submit_form():
     form = AdmissionForm()
     if form.validate_on_submit():
         try:
-            # Check if user already submitted
+            # Cek apakah user sudah submit
             existing_form = Form.query.filter_by(user_id=current_user.id).first()
             if existing_form:
                 flash('Anda sudah mengirimkan pendaftaran sebelumnya', 'error')
                 return redirect(url_for('main.dashboard'))
 
+            # Buat folder uploads jika belum ada
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
             
-            uploaded_files = {}
-            required_files = {
-                'foto_siswa': ['png', 'jpg', 'jpeg'],
-                'akta_kelahiran': ['pdf', 'png', 'jpg', 'jpeg'],
-                'kartu_keluarga': ['pdf', 'png', 'jpg', 'jpeg'],
-                'ijazah_smp': ['pdf', 'png', 'jpg', 'jpeg'],
-                'ktp_ortu': ['pdf', 'png', 'jpg', 'jpeg'],
-                'nilai_rapor': ['pdf', 'png', 'jpg', 'jpeg']
-            }
-            
-            # Process all required files
-            for field_name, allowed_types in required_files.items():
-                file = getattr(form, field_name).data
-                if not file:
-                    flash(f'{field_name.replace("_", " ").title()} wajib diunggah', 'error')
-                    return redirect(url_for('main.dashboard'))
-                
-                if file and allowed_file(file.filename, set(allowed_types)):
-                    filename = secure_filename(f"{current_user.id}_{field_name}_{file.filename}")
-                    filepath = os.path.join(UPLOAD_FOLDER, filename)
-                    file.save(filepath)
-                    uploaded_files[field_name] = filename
-                else:
-                    flash(f'Format file {field_name.replace("_", " ").title()} tidak sesuai', 'error')
-                    return redirect(url_for('main.dashboard'))
-            
-            # Handle optional sertifikat_prestasi
-            if form.sertifikat_prestasi.data:
-                file = form.sertifikat_prestasi.data
-                if allowed_file(file.filename, {'pdf', 'png', 'jpg', 'jpeg'}):
-                    filename = secure_filename(f"{current_user.id}_sertifikat_prestasi_{file.filename}")
-                    filepath = os.path.join(UPLOAD_FOLDER, filename)
-                    file.save(filepath)
-                    uploaded_files['sertifikat_prestasi'] = filename
-            
-            # Prepare form data
+            # Simpan data formulir
             form_data = {
                 'birth_date': form.birth_date.data.strftime('%Y-%m-%d'),
                 'address': form.address.data.strip(),
@@ -173,7 +144,47 @@ def submit_form():
                 'jurusan': form.jurusan.data
             }
             
-            # Create new form entry
+            # Proses file yang diunggah
+            uploaded_files = {}
+            required_files = {
+                'foto_siswa': ['png', 'jpg', 'jpeg'],
+                'akta_kelahiran': ['pdf', 'png', 'jpg', 'jpeg'],
+                'kartu_keluarga': ['pdf', 'png', 'jpg', 'jpeg'],
+                'ijazah_smp': ['pdf', 'png', 'jpg', 'jpeg'],
+                'ktp_ortu': ['pdf', 'png', 'jpg', 'jpeg'],
+                'nilai_rapor': ['pdf', 'png', 'jpg', 'jpeg']
+            }
+
+            # Validasi dan simpan file
+            for field_name, allowed_types in required_files.items():
+                file = getattr(form, field_name).data
+                if not file:
+                    flash(f'{field_name.replace("_", " ").title()} wajib diunggah', 'error')
+                    return redirect(url_for('main.dashboard'))
+                
+                if not allowed_file(file.filename, set(allowed_types)):
+                    flash(f'Format file {field_name.replace("_", " ").title()} tidak sesuai', 'error')
+                    return redirect(url_for('main.dashboard'))
+                
+                try:
+                    filename = secure_filename(f"{current_user.id}_{field_name}_{file.filename}")
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    file.save(filepath)
+                    uploaded_files[field_name] = filename
+                except Exception as e:
+                    flash(f'Gagal mengunggah {field_name.replace("_", " ").title()}: {str(e)}', 'error')
+                    return redirect(url_for('main.dashboard'))
+
+            # Handle sertifikat prestasi (opsional)
+            if form.sertifikat_prestasi.data:
+                file = form.sertifikat_prestasi.data
+                if allowed_file(file.filename, {'pdf', 'png', 'jpg', 'jpeg'}):
+                    filename = secure_filename(f"{current_user.id}_sertifikat_prestasi_{file.filename}")
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    file.save(filepath)
+                    uploaded_files['sertifikat_prestasi'] = filename
+
+            # Buat entri form baru
             new_form = Form(
                 user_id=current_user.id,
                 form_data=json.dumps(form_data),
@@ -184,7 +195,7 @@ def submit_form():
             db.session.add(new_form)
             db.session.commit()
             
-            flash('Pendaftaran Anda berhasil dikirim!', 'success')
+            flash('Pendaftaran berhasil! Silakan lakukan pembayaran', 'success')
             return redirect(url_for('main.dashboard'))
             
         except Exception as e:
@@ -192,7 +203,7 @@ def submit_form():
             flash(f'Error saat mengirim pendaftaran: {str(e)}', 'error')
             return redirect(url_for('main.dashboard'))
     
-    # If validation fails, show all errors
+    # Tampilkan semua error validasi
     for field, errors in form.errors.items():
         for error in errors:
             flash(f'{getattr(form, field).label.text}: {error}', 'error')
@@ -228,3 +239,56 @@ def form_details(form_id):
         'status': form.status,
         'timestamp': form.timestamp.strftime('%Y-%m-%d %H:%M')
     })
+
+@main.route('/payment/<int:form_id>')
+@login_required
+def payment(form_id):
+    form = Form.query.get_or_404(form_id)
+    if form.user_id != current_user.id:
+        return redirect(url_for('main.dashboard'))
+    return render_template('payment.html', form=form)
+
+@main.route('/upload-payment/<int:form_id>', methods=['POST'])
+@login_required
+def upload_payment(form_id):
+    form = Form.query.get_or_404(form_id)
+    if form.user_id != current_user.id:
+        return redirect(url_for('main.dashboard'))
+        
+    if 'payment_proof' not in request.files:
+        flash('Tidak ada file yang dipilih', 'error')
+        return redirect(url_for('main.payment', form_id=form_id))
+        
+    file = request.files['payment_proof']
+    if file.filename == '':
+        flash('Tidak ada file yang dipilih', 'error')
+        return redirect(url_for('main.payment', form_id=form_id))
+        
+    if file and allowed_file(file.filename, {'png', 'jpg', 'jpeg'}):
+        filename = secure_filename(f"{current_user.id}_payment_{file.filename}")
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        
+        form.payment_proof = filename
+        form.payment_status = 'paid'
+        db.session.commit()
+        
+        flash('Bukti pembayaran berhasil diunggah', 'success')
+        return redirect(url_for('main.dashboard'))
+        
+    flash('Format file tidak diizinkan', 'error')
+    return redirect(url_for('main.payment', form_id=form_id))
+
+@main.route('/confirm-payment/<int:form_id>', methods=['POST'])
+@login_required
+def confirm_payment(form_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('main.dashboard'))
+        
+    form = Form.query.get_or_404(form_id)
+    form.payment_status = 'confirmed'
+    form.status = 'accepted'
+    db.session.commit()
+    
+    flash('Pembayaran telah dikonfirmasi', 'success')
+    return redirect(url_for('main.dashboard'))
