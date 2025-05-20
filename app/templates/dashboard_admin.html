@@ -11,15 +11,12 @@
                 <h2 class="welcome-text">Dashboard Admin</h2>
                 <p class="text-muted">Manajemen Penerimaan Peserta Didik Baru</p>
             </div>
-            <div class="col-md-6 text-md-end">
-                <div class="stats-pills">
-                    <div class="stat-item">
-                        <i class="fas fa-users"></i>
-                        <span>{{ forms|length }} Pendaftar</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-clock"></i>
-                        <span>{{ forms|selectattr('status', 'equalto', 'pending')|list|length }} Menunggu</span>
+            <div class="col-md-6">
+                <div class="stats-cards">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-xl-3">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -28,66 +25,76 @@
 
     <!-- Main Content -->
     <div class="row">
-        <!-- Applications Table -->
-        <div class="col-12">
+        <!-- Sidebar Filter -->
+        <div class="col-md-3">
+            <div class="admin-sidebar">
+                <!-- Update the sidebar filter section -->
+                <div class="sidebar-card">
+                    <h5><i class="fas fa-filter me-2"></i>Filter Status</h5>
+                    <div class="filter-list">
+                        <button class="filter-item active w-100 text-start mb-2" data-filter="all">
+                            <i class="fas fa-list me-2"></i>
+                            <span>Semua Pendaftar</span>
+                            <span class="badge bg-primary ms-auto">0</span>
+                        </button>
+                        <button class="filter-item w-100 text-start mb-2" data-filter="pending">
+                            <i class="fas fa-clock me-2"></i>
+                            <span>Menunggu Verifikasi</span>
+                            <span class="badge bg-warning ms-auto">0</span>
+                        </button>
+                        <button class="filter-item w-100 text-start mb-2" data-filter="accepted">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span>Diterima</span>
+                            <span class="badge bg-success ms-auto">0</span>
+                        </button>
+                        <button class="filter-item w-100 text-start" data-filter="rejected">
+                            <i class="fas fa-times-circle me-2"></i>
+                            <span>Ditolak</span>
+                            <span class="badge bg-danger ms-auto">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
             <div class="card admin-card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="card-title mb-0">Daftar Pendaftar</h4>
-                        <div class="filter-options">
-                            <button class="btn btn-outline-primary btn-sm active" data-filter="all">
-                                Semua
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" data-filter="pending">
-                                Menunggu
-                            </button>
-                            <button class="btn btn-outline-success btn-sm" data-filter="accepted">
-                                Diterima
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm" data-filter="rejected">
-                                Ditolak
-                            </button>
-                        </div>
-                    </div>
-
+                    <h4 class="card-title mb-4">Daftar Pendaftar</h4>
                     <div class="table-responsive">
-                        <table class="table table-hover admin-table">
+                        <table id="applicationsTable" class="table table-hover admin-table">
                             <thead>
                                 <tr>
                                     <th>Nama Siswa</th>
                                     <th>NISN</th>
                                     <th>Asal Sekolah</th>
+                                    <th>Jurusan</th>
                                     <th>Tanggal Daftar</th>
                                     <th>Status</th>
+                                    <th>Pembayaran</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for form in forms %}
                                 <tr class="application-row" data-status="{{ form.status }}">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="student-avatar">
-                                                {% if form.foto_siswa %}
-                                                    <img src="{{ url_for('static', filename='uploads/' + form.foto_siswa) }}" 
-                                                         alt="Foto {{ form.user.name }}">
-                                                {% else %}
-                                                    <i class="fas fa-user"></i>
-                                                {% endif %}
-                                            </div>
-                                            <div class="ms-3">
-                                                <h6 class="mb-0">{{ form.user.name }}</h6>
-                                                <small class="text-muted">{{ form.parsed_form_data.get('phone', '-') }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td>{{ form.user.name }}</td>
                                     <td>{{ form.parsed_form_data.get('nisn', '-') }}</td>
                                     <td>{{ form.parsed_form_data.get('previous_school', '-') }}</td>
-                                    <td>{{ form.timestamp.strftime('%d %b %Y') }}</td>
+                                    <td>{{ "IPA" if form.parsed_form_data.get('jurusan') == 'ipa' else "IPS" }}</td>
+                                    <td data-sort="{{ form.timestamp.strftime('%Y%m%d') }}">
+                                        {{ form.timestamp.strftime('%d %b %Y') }}
+                                    </td>
                                     <td>
                                         <span class="status-badge {{ form.status }}">
                                             <i class="fas fa-{{ 'check' if form.status == 'accepted' else 'times' if form.status == 'rejected' else 'clock' }}"></i>
                                             {{ 'Diterima' if form.status == 'accepted' else 'Ditolak' if form.status == 'rejected' else 'Menunggu' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {{ 'success' if form.payment_status == 'confirmed' else 'warning' if form.payment_status == 'paid' else 'danger' }}">
+                                            {{ 'Lunas' if form.payment_status == 'confirmed' else 'Menunggu Konfirmasi' if form.payment_status == 'paid' else 'Belum Bayar' }}
                                         </span>
                                     </td>
                                     <td>

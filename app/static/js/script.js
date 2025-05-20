@@ -216,6 +216,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // DataTables initialization for applications table
+    const applicationsTable = document.getElementById('applicationsTable');
+    if (applicationsTable) {
+        let table = $(applicationsTable).DataTable({
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+            },
+            order: [[4, 'desc']], // Sort by date desc
+            columnDefs: [
+                { orderable: false, targets: [7] }, // Disable sorting for action column
+                { 
+                    targets: [5, 6], // Status and Payment columns
+                    orderable: true,
+                    render: function(data, type, row) {
+                        if (type === 'sort') {
+                            return data.textContent;
+                        }
+                        return data;
+                    }
+                }
+            ],
+            dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-flex align-items-center"l><"d-flex"f>>rtip',
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+        });
+
+        // Handle filter buttons
+        $('.filter-options .btn').on('click', function() {
+            const filter = $(this).data('filter');
+            if (filter === 'all') {
+                table.column(5).search('').draw();
+            } else {
+                table.column(5).search(filter).draw();
+            }
+            
+            // Update active button state
+            $('.filter-options .btn').removeClass('active');
+            $(this).addClass('active');
+        });
+    }
 });
 
 // Form Steps Navigation
@@ -268,4 +309,27 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
         });
     }
+});
+
+// Add to your existing script.js
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-item');
+    const table = $('#applicationsTable').DataTable();
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active state
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Apply filter
+            if (filter === 'all') {
+                table.column(5).search('').draw();
+            } else {
+                table.column(5).search(filter).draw();
+            }
+        });
+    });
 });

@@ -399,4 +399,39 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Update the sidebar filter section -->
+<div class="sidebar-card">
+    <h5><i class="fas fa-filter me-2"></i>Filter Status</h5>
+    <div class="filter-list">
+        <button class="filter-item active w-100 text-start mb-2" data-filter="all">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-list me-2"></i>
+                <span>Semua Pendaftar</span>
+            </div>
+            <span class="badge bg-primary">{{ forms|length }}</span>
+        </button>
+        <button class="filter-item w-100 text-start mb-2" data-filter="pending">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-clock me-2"></i>
+                <span>Menunggu Verifikasi</span>
+            </div>
+            <span class="badge bg-warning">{{ forms|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+        </button>
+        <button class="filter-item w-100 text-start mb-2" data-filter="accepted">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle me-2"></i>
+                <span>Diterima</span>
+            </div>
+            <span class="badge bg-success">{{ forms|selectattr('status', 'equalto', 'accepted')|list|length }}</span>
+        </button>
+        <button class="filter-item w-100 text-start" data-filter="rejected">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-times-circle me-2"></i>
+                <span>Ditolak</span>
+            </div>
+            <span class="badge bg-danger">{{ forms|selectattr('status', 'equalto', 'rejected')|list|length }}</span>
+        </button>
+    </div>
+</div>
 {% endblock %}
