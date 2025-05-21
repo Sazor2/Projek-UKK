@@ -287,8 +287,33 @@ def confirm_payment(form_id):
         
     form = Form.query.get_or_404(form_id)
     form.payment_status = 'confirmed'
+    db.session.commit()
+    
+    flash('Pembayaran berhasil diverifikasi', 'success')
+    return redirect(url_for('main.dashboard'))
+
+@main.route('/approve-application/<int:form_id>', methods=['POST'])
+@login_required
+def approve_application(form_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('main.dashboard'))
+        
+    form = Form.query.get_or_404(form_id)
     form.status = 'accepted'
     db.session.commit()
     
-    flash('Pembayaran telah dikonfirmasi', 'success')
+    flash('Pendaftaran diterima. Menunggu pembayaran dari siswa.', 'success')
+    return redirect(url_for('main.dashboard'))
+
+@main.route('/reject-application/<int:form_id>', methods=['POST'])
+@login_required
+def reject_application(form_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('main.dashboard'))
+        
+    form = Form.query.get_or_404(form_id)
+    form.status = 'rejected'
+    db.session.commit()
+    
+    flash('Pendaftaran ditolak.', 'info')
     return redirect(url_for('main.dashboard'))

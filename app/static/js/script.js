@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // DataTables initialization for applications table
+    // DataTables initialization and filter handling
     const applicationsTable = document.getElementById('applicationsTable');
     if (applicationsTable) {
         let table = $(applicationsTable).DataTable({
@@ -229,33 +229,63 @@ document.addEventListener('DOMContentLoaded', function() {
             columnDefs: [
                 { orderable: false, targets: [7] }, // Disable sorting for action column
                 { 
-                    targets: [5, 6], // Status and Payment columns
-                    orderable: true,
+                    targets: [5], // Status column
                     render: function(data, type, row) {
-                        if (type === 'sort') {
-                            return data.textContent;
+                        if (type === 'display') {
+                            return data;
                         }
-                        return data;
+                        // Extract text content for sorting/filtering
+                        return $(data).text();
                     }
                 }
-            ],
-            dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-flex align-items-center"l><"d-flex"f>>rtip',
-            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            ]
         });
 
         // Handle filter buttons
-        $('.filter-options .btn').on('click', function() {
-            const filter = $(this).data('filter');
-            if (filter === 'all') {
-                table.column(5).search('').draw();
-            } else {
-                table.column(5).search(filter).draw();
-            }
-            
-            // Update active button state
-            $('.filter-options .btn').removeClass('active');
-            $(this).addClass('active');
+        const filterButtons = document.querySelectorAll('.filter-item');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filterValue = this.dataset.filter;
+                
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Apply filter
+                if (filterValue === 'all') {
+                    table.column(5).search('').draw();
+                } else {
+                    // Search for exact status text
+                    table.column(5).search(filterValue, true, false).draw();
+                }
+                
+                // Update counters
+                updateCounterBadges(table);
+            });
         });
+
+        // Function to update counter badges
+        function updateCounterBadges(table) {
+            // Total count
+            const totalCount = table.rows().count();
+            document.querySelector('[data-filter="all"] .counter-badge').textContent = totalCount;
+
+            // Pending count
+            const pendingCount = table.column(5).data().filter(d => $(d).text().includes('Menunggu')).length;
+            document.querySelector('[data-filter="Menunggu"] .counter-badge').textContent = pendingCount;
+
+            // Accepted count
+            const acceptedCount = table.column(5).data().filter(d => $(d).text().includes('Diterima')).length;
+            document.querySelector('[data-filter="Diterima"] .counter-badge').textContent = acceptedCount;
+
+            // Rejected count
+            const rejectedCount = table.column(5).data().filter(d => $(d).text().includes('Ditolak')).length;
+            document.querySelector('[data-filter="Ditolak"] .counter-badge').textContent = rejectedCount;
+        }
+
+        // Initial counter update
+        updateCounterBadges(table);
     }
 });
 
@@ -311,25 +341,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Add to your existing script.js
-document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-item');
-    const table = $('#applicationsTable').DataTable();
-
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const filter = this.dataset.filter;
-            
-            // Update active state
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Apply filter
-            if (filter === 'all') {
-                table.column(5).search('').draw();
-            } else {
-                table.column(5).search(filter).draw();
+function approveApplication(formId) {
+    if (confirm('Terima pendaftaran ini dan minta pembayaran?')) {
+        fetch(`/approve-application/${formId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
             }
         });
-    });
-});
+    }
+}
+
+function rejectApplication(formId) {
+    if (confirm('Tolak pendaftaran ini?')) {
+        fetch(`/reject-application/${formId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            }
+        });
+    }
+}
+
+// Print Acceptance Letter Function
+function printAcceptanceLetter() {
+    window.print();
+}
