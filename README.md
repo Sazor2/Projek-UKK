@@ -147,6 +147,10 @@ flask shell
 ## 🔄 Changelog
 Lihat [CHANGELOG.md](CHANGELOG.md) untuk detail perubahan.
 
+##  Tampilan landing page
+![Screenshot 2025-05-22 124021](https://github.com/user-attachments/assets/f7f1f5e2-cb50-402a-a056-d4d7035dc0a7)
+
+
 ## 👨‍💻 Author
 
 Made with ❤️ by **Nabil Akbar Kurnia Wijaya Putra**
