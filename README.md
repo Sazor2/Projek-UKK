@@ -1,154 +1,156 @@
-# Sistem PPDB Online
+# PPDB Online SMA Yadika 🏫
 
-Sistem Penerimaan Peserta Didik Baru (PPDB) Online adalah aplikasi web yang memudahkan proses pendaftaran siswa baru secara digital.
+> Sistem Penerimaan Peserta Didik Baru Online menggunakan Flask Framework
 
-## Fitur Utama
+## 📋 Deskripsi
+Sistem PPDB Online untuk memudahkan proses pendaftaran siswa baru secara digital. Mendukung verifikasi dokumen, pembayaran, dan manajemen data calon siswa.
 
-### Untuk Calon Siswa
-- Registrasi dan login akun
-- Form pendaftaran online
-- Upload dokumen persyaratan
-- Tracking status pendaftaran
-- Pembayaran dan upload bukti
-- Cetak bukti pendaftaran
-
-### Untuk Admin
-- Dashboard admin
-- Verifikasi pendaftaran
-- Filter dan manajemen pendaftar
-- Konfirmasi pembayaran
-- Statistik pendaftaran
-
-## Teknologi Yang Digunakan
-
-### Backend
-- Python Flask
-- SQLAlchemy (Database ORM)
-- Flask-Login (Autentikasi)
-- Flask-Migrate (Database Migration)
-
-### Frontend
-- HTML5 & CSS3
-- Bootstrap 5
-- JavaScript & jQuery
-- DataTables
-- Font Awesome Icons
-- AOS (Animate On Scroll)
-
-### Database
-- SQLite
-
-## Persyaratan Sistem
-
-```bash
-# Python packages required
-Flask==2.0.1
-Flask-SQLAlchemy==2.5.1
-Flask-Login==0.5.0
-Flask-Migrate==3.1.0
-Flask-WTF==0.15.1
-Werkzeug==2.0.1
-```
-
-## Instalasi
+## 🛠️ Instalasi
 
 1. Clone repository
 ```bash
-git clone https://github.com/username/ppdb-online.git
-cd ppdb-online
+git clone https://github.com/username/ppdb-sma-yadika.git
+cd ppdb-sma-yadika
 ```
 
 2. Buat virtual environment
 ```bash
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+# Untuk Windows
+venv\Scripts\activate
+# Untuk Linux/Mac
+source venv/bin/activate
 ```
 
-3. Install dependencies
+3. Install dependencies dan setup
 ```bash
 pip install -r requirements.txt
-```
-
-4. Setup database
-```bash
 flask db upgrade
-```
-
-5. Buat admin pertama
-```bash
 flask create-admin admin password123
-```
-
-6. Jalankan aplikasi
-```bash
 python run.py
 ```
 
-## Struktur Folder
+## ✨ Fitur Utama
 
-```
-ppdb-online/
-├── app/
-│   ├── static/
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── uploads/
-│   ├── templates/
-│   ├── routes/
-│   ├── models.py
-│   └── __init__.py
-├── migrations/
-├── config.py
-├── run.py
-└── requirements.txt
-```
+### 👨‍🎓 Portal Siswa
+- Pendaftaran akun dan login
+- Form pendaftaran multi-step
+- Upload dokumen persyaratan
+- Tracking status pendaftaran
+- Upload bukti pembayaran
+- Cetak bukti penerimaan
 
-## Fitur Keamanan
+### 👨‍💼 Portal Admin
+- Dashboard statistik
+- Verifikasi dokumen
+- Konfirmasi pembayaran
+- Filter & pencarian data
+- Manajemen status siswa
 
+## 📑 Dokumen Yang Dibutuhkan
+- Pas Foto 3x4 (JPG/PNG)
+- Kartu Keluarga (PDF/JPG/PNG)
+- KTP Orang Tua (PDF/JPG/PNG)
+- Akta Kelahiran (PDF/JPG/PNG)
+- Ijazah/SKL SMP (PDF/JPG/PNG)
+- Nilai Rapor (PDF/JPG/PNG)
+- Sertifikat Prestasi (Opsional)
+
+## 🔒 Batasan File
+- Max size: 2MB/file
+- Format foto: JPG, PNG
+- Format dokumen: PDF, JPG, PNG
+
+## 🔄 Alur Pendaftaran
+1. Siswa registrasi akun
+2. Upload dokumen persyaratan
+3. Admin verifikasi dokumen
+4. Siswa upload bukti pembayaran
+5. Admin verifikasi pembayaran
+6. Cetak bukti penerimaan
+
+## 💻 Teknologi
+
+### Backend
+- Python Flask
+- SQLAlchemy ORM
+- Flask-Login
+- WTForms
+
+### Frontend
+- Bootstrap 5
+- JavaScript/jQuery
+- DataTables
+- Font Awesome 5
+
+### Database
+- SQLite
+
+## 🛡️ Keamanan
 - Password hashing
-- Form validation
-- File upload validation
-- User authentication
-- Role-based access control
 - CSRF protection
+- File validation
+- Role-based access
+- Input sanitization
 
-## Status Pendaftaran
+## 📱 Browser Support
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-1. **Menunggu Verifikasi** - Dokumen sedang diverifikasi admin
-2. **Diterima** - Pendaftaran diterima, menunggu pembayaran
-3. **Ditolak** - Pendaftaran ditolak oleh admin
+## 💾 Database Management
 
-## Dokumen Yang Dibutuhkan
+### Backup Database
+```bash
+sqlite3 instance/ppdb.db .dump > backup.sql
+```
 
-1. Pas Foto 3x4
-2. Akta Kelahiran
-3. Kartu Keluarga
-4. Ijazah/SKL SMP
-5. KTP Orang Tua
-6. Nilai Rapor
-7. Sertifikat Prestasi (opsional)
+### Restore Database
+```bash
+sqlite3 instance/ppdb.db < backup.sql
+```
 
-## Batasan File
+## ⚠️ Troubleshooting
 
-- Maksimum ukuran: 2MB per file
-- Format yang diizinkan: 
-  - Foto: JPG, PNG
-  - Dokumen: PDF, JPG, PNG
+### Reset Password Admin
+```bash
+flask shell
+>>> from app.models import User, db
+>>> admin = User.query.filter_by(username='admin').first()
+>>> admin.password = generate_password_hash('newpassword')
+>>> db.session.commit()
+```
 
-## Kontribusi
+### Clear Database
+```bash
+flask shell
+>>> from app.models import db
+>>> db.drop_all()
+>>> db.create_all()
+```
 
-Silakan berkontribusi dengan membuat pull request. Untuk perubahan besar, harap buka issue terlebih dahulu.
+## 🤝 Kontribusi
+1. Fork repository
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
 
-## Lisensi
+## 📞 Kontak & Dukungan
+- Email: ppdb@smayadika.sch.id
+- Phone: 021-1234567
 
+## 📜 Lisensi
 [MIT License](LICENSE)
 
-## Kontak
+## 🔄 Changelog
+Lihat [CHANGELOG.md](CHANGELOG.md) untuk detail perubahan.
 
-Email: ppdb@sekolah.sch.id
-Phone: +62 123 4567 890
+##  Tampilan landing page
+![Screenshot 2025-05-22 124021](https://github.com/user-attachments/assets/f7f1f5e2-cb50-402a-a056-d4d7035dc0a7)
 
-## Screenshots
 
-[Tambahkan screenshot aplikasi di sini]
+## 👨‍💻 Author
+
+Made with ❤️ by **Nabil Akbar Kurnia Wijaya Putra**
