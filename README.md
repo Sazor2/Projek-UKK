@@ -147,8 +147,38 @@ flask shell
 ## 🔄 Changelog
 Lihat [CHANGELOG.md](CHANGELOG.md) untuk detail perubahan.
 
-##  Tampilan landing page
+
+
+##  Tampilan Landing page
 ![Screenshot 2025-05-22 124021](https://github.com/user-attachments/assets/f7f1f5e2-cb50-402a-a056-d4d7035dc0a7)
+
+
+##  Tampilan Register
+![Screenshot 2025-05-22 122946](https://github.com/user-attachments/assets/7329c809-e797-43b5-af23-1f0b51941045)
+
+
+##  Tampilan Login
+![Screenshot 2025-05-22 123057](https://github.com/user-attachments/assets/1375fa96-04ce-4b21-a080-eeccc7eca16c)
+
+
+##  Tampilan isi dokumen pendaftaran
+![Screenshot 2025-05-22 123826](https://github.com/user-attachments/assets/f4ea66f5-6814-4fb2-a94e-29188fd164fd)
+
+
+
+##  Tampilan user dashboard untuk siswa
+![Screenshot 2025-05-22 123737](https://github.com/user-attachments/assets/4251b31c-1e99-40d6-9273-3989c2b8f74d)
+
+
+
+##  Tampilan admin dashboard
+![Screenshot 2025-05-22 125724](https://github.com/user-attachments/assets/31be80ab-fbfd-47a8-b597-af11d6fea73c)
+
+
+
+##  Tampilan detail siswa
+![Screenshot 2025-05-22 125735](https://github.com/user-attachments/assets/d55b81f0-65f9-47c0-92c2-c4545fd5bbc7)
+
 
 
 ## 👨‍💻 Author
