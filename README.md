@@ -146,3 +146,7 @@ flask shell
 
 ## 🔄 Changelog
 Lihat [CHANGELOG.md](CHANGELOG.md) untuk detail perubahan.
+
+## 👨‍💻 Author
+
+Made with ❤️ by **Nabil Akbar Kurnia Wijaya Putra**
