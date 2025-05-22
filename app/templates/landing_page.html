@@ -1,106 +1,183 @@
 {% extends "base.html" %}
 
-{% block title %}Selamat Datang{% endblock %}
+{% block title %}SMA Yadika - PPDB Online{% endblock %}
 
 {% block content %}
-<div class="hero-section text-center mb-5">
-    <h1 class="display-4 mb-4">Selamat Datang di Sistem PPDB Online</h1>
-    <p class="lead mb-4">Sistem Penerimaan Peserta Didik Baru yang mudah, cepat, dan transparan</p>
-    {% if not current_user.is_authenticated %}
-        <div class="hero-buttons">
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3">
-                <i class="fas fa-user-plus me-2"></i>Daftar Sekarang
-            </a>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-sign-in-alt me-2"></i>Masuk
-            </a>
-        </div>
-    {% else %}
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
-            <i class="fas fa-tachometer-alt me-2"></i>Ke Dashboard
-        </a>
-    {% endif %}
-</div>
+<!-- Hero Section -->
+<div class="hero-section text-center mb-5 animate__animated animate__fadeIn">
+    <div class="hero-content">
+        <h1 class="display-4 mb-4 animate__animated animate__slideInDown">
+            Selamat Datang di Portal PPDB Online
+            <span class="highlight">SMA Yadika</span>
+        </h1>
+        <p class="lead mb-4 animate__animated animate__slideInUp">
+            Wujudkan Masa Depanmu Bersama SMA Yadika
+            <br>
+            <span class="text-muted">Pendidikan Berkualitas, Karakter Unggul</span>
+        </p>
 
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="card shadow-lg">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Langkah-langkah Pendaftaran</h2>
-                <div class="steps-wrapper">
-                    <div class="row g-4">
-                        <div class="col-md-3">
-                            <div class="step-card">
-                                <div class="step-icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div>
-                                <h3>1. Buat Akun</h3>
-                                <p>Daftar dengan informasi pribadi Anda untuk memulai</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="step-card">
-                                <div class="step-icon">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                </div>
-                                <h3>2. Masuk ke Akun</h3>
-                                <p>Akses dashboard menggunakan akun Anda</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="step-card">
-                                <div class="step-icon">
-                                    <i class="fas fa-file-alt"></i>
-                                </div>
-                                <h3>3. Isi Formulir</h3>
-                                <p>Lengkapi formulir pendaftaran dengan data yang diperlukan</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="step-card">
-                                <div class="step-icon">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <h3>4. Tunggu Hasil</h3>
-                                <p>Pantau status pendaftaran Anda di dashboard</p>
-                            </div>
-                        </div>
+        <!-- Statistics Cards -->
+        <div class="stats-row row justify-content-center mb-5">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card total" data-aos="fade-up">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><span class="counter" data-target="500">0</span></h3>
+                        <p>Kuota Siswa Baru</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card success" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>2</h3>
+                        <p>Program Unggulan</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card info" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><span id="countdown">30</span></h3>
+                        <p>Hari Tersisa</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="info-cards mt-5">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
-                            <h4>Jadwal PPDB</h4>
-                            <p>Pendaftaran dibuka dari 1 Juni hingga 30 Juni 2024</p>
-                        </div>
+        {% if not current_user.is_authenticated %}
+            <div class="cta-buttons animate__animated animate__bounceIn">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3 pulse-button">
+                    <i class="fas fa-user-plus me-2"></i>Daftar Sekarang
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg hover-effect">
+                    <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                </a>
+            </div>
+        {% else %}
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg animate__animated animate__bounceIn">
+                <i class="fas fa-tachometer-alt me-2"></i>Ke Dashboard
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Program Section -->
+<section class="program-section mb-5" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Program Unggulan</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3>IPA (MIPA)</h3>
+                    <p class="program-desc">Program unggulan dengan fokus pada Matematika dan Ilmu Pengetahuan Alam
+                    </p>
+                    <ul class="program-features">
+                        <li><i class="fas fa-check"></i> Laboratorium Sains Modern</li>
+                        <li><i class="fas fa-check"></i> Program Riset Ilmiah</li>
+                        <li><i class="fas fa-check"></i> Persiapan PTN Saintek</li>
+                    </ul>
+                    <div class="program-quota">
+                        Kuota: 250 Siswa
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-file-upload fa-3x mb-3 text-primary"></i>
-                            <h4>Dokumen</h4>
-                            <p>Siapkan dokumen yang diperlukan untuk pendaftaran</p>
-                        </div>
+            </div>
+            <div class="col-md-6">
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-globe"></i>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-question-circle fa-3x mb-3 text-primary"></i>
-                            <h4>Bantuan</h4>
-                            <p>Hubungi kami jika membutuhkan bantuan</p>
-                        </div>
+                    <h3>IPS (Sosial)</h3>
+                    <p class="program-desc">Program unggulan dengan fokus pada Ilmu Sosial dan Humaniora</p>
+                    <ul class="program-features">
+                        <li><i class="fas fa-check"></i> Program Studi Sosial Komprehensif</li>
+                        <li><i class="fas fa-check"></i> Pengembangan Jiwa Wirausaha</li>
+                        <li><i class="fas fa-check"></i> Persiapan PTN Soshum</li>
+                    </ul>
+                    <div class="program-quota">
+                        Kuota: 250 Siswa
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Timeline Section -->
+<section class="timeline-section mb-5" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Jadwal PPDB 2024/2025</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">1 Juni</div>
+                <div class="timeline-content">
+                    <h3>Pembukaan Pendaftaran</h3>
+                    <p>Pendaftaran online dibuka untuk seluruh calon siswa baru</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">15 Juni</div>
+                <div class="timeline-content">
+                    <h3>Seleksi Berkas</h3>
+                    <p>Proses verifikasi dokumen dan seleksi administrasi</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">25 Juni</div>
+                <div class="timeline-content">
+                    <h3>Pengumuman</h3>
+                    <p>Pengumuman hasil seleksi penerimaan siswa baru</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">30 Juni</div>
+                <div class="timeline-content">
+                    <h3>Penutupan</h3>
+                    <p>Batas akhir daftar ulang dan pembayaran</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-section mb-5" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Informasi Kontak</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="contact-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Alamat</h4>
+                    <p>Jl. Raya Yadika No. 123<br>Jakarta Timur</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-card">
+                    <i class="fas fa-phone-alt"></i>
+                    <h4>Telepon</h4>
+                    <p>021-1234567<br>0812-3456-7890</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <h4>Email</h4>
+                    <p>ppdb@smayadika.sch.id<br>info@smayadika.sch.id</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

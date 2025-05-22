@@ -287,6 +287,67 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initial counter update
         updateCounterBadges(table);
     }
+
+    // Counter Animation
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200;
+
+    counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / speed;
+
+        const updateCount = () => {
+            const count = +counter.innerText;
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(updateCount, 1);
+            } else {
+                counter.innerText = target;
+            }
+        };
+
+        updateCount();
+    });
+
+    // Countdown Timer
+    const countdownElement = document.getElementById('countdown');
+    if (countdownElement) {
+        const updateCountdown = () => {
+            const targetDate = new Date('2024-06-30').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            countdownElement.innerText = days;
+
+            if (distance < 0) {
+                countdownElement.innerText = "0";
+            }
+        };
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000 * 60 * 60 * 24); // Update daily
+    }
+
+    // Timeline Animation
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    timelineItems.forEach(item => {
+        observer.observe(item);
+    });
 });
 
 // Form Steps Navigation
