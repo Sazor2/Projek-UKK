@@ -351,6 +351,65 @@ a:hover {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
+/* Admin Dashboard Styles */
+.stat-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.filter-list .filter-item {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.filter-list .filter-item.active {
+    background: var(--link-color);
+    color: white;
+    border-color: var(--link-color);
+}
+
+.filter-list .filter-item:hover {
+    background: var(--bg-primary);
+    transform: translateY(-2px);
+}
+
+#applicationsTable {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#applicationsTable th {
+    background: var(--card-bg);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
 /* Dark mode adjustments */
 [data-theme="dark"] {
     --bg-primary: #121212;
@@ -679,4 +738,82 @@ input:focus + .theme-icon {
 
 [data-theme="dark"] .section-title:after {
     background: var(--link-color);
+}
+
+/* Document Detail Modal Styles */
+.student-info-header {
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.student-info-grid {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.document-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.document-header {
+    padding: 1rem;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+}
+
+.document-preview {
+    padding: 1rem;
+    background: var(--card-bg);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.document-preview img,
+.document-preview embed {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-primary);
+    border: none;
+    padding: 1rem 1.5rem;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--link-color);
+    background: transparent;
+    border-bottom: 2px solid var(--link-color);
+}
+
+.tab-content {
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 0 0 12px 12px;
+}
+
+.payment-proof-preview {
+    text-align: center;
+}
+
+.payment-proof-preview img {
+    max-height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

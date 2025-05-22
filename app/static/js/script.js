@@ -436,3 +436,25 @@ function rejectApplication(formId) {
 function printAcceptanceLetter() {
     window.print();
 }
+
+// Add to script.js
+function confirmPayment(formId) {
+    if (confirm('Verifikasi bukti pembayaran ini?')) {
+        fetch(`/confirm-payment/${formId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+            }
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Gagal memverifikasi pembayaran. Silakan coba lagi.');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan. Silakan coba lagi.');
+        });
+    }
+}
